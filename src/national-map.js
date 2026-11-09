@@ -115,7 +115,8 @@ function regionBounds(region) {
 }
 
 async function localBasemap() {
-  const archiveUrl = new URL(import.meta.env.BASE_URL + 'tiles/china-atlas.pmtiles', location.origin).href;
+  const path = import.meta.env.VITE_PMTILES_URL || import.meta.env.BASE_URL + 'tiles/china-atlas.pmtiles';
+  const archiveUrl = new URL(path, location.origin).href;
   const archive = new PMTiles(archiveUrl);
   try {
     await archive.getHeader();

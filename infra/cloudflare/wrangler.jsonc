@@ -1,0 +1,17 @@
+{
+  "name": "mubei-tiles",
+  "main": "tiles.js",
+  "compatibility_date": "2026-11-08",
+  "workers_dev": true,
+  "preview_urls": false,
+  "vars": {
+    "ARCHIVE_KEY": "china-atlas-20261107.pmtiles",
+    "ARCHIVE_SIZE": 3727516569
+  },
+  "r2_buckets": [
+    {
+      "binding": "ATLAS",
+      "bucket_name": "mubei-atlas"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import './pdf-preview.css';
 
 let dialog;
 let session;
+const archiveOnly = import.meta.env.VITE_ARCHIVE_PDF_ONLY === '1';
 
 function fillReader(viewer, { modal }) {
   const heading = modal ? 'h2' : 'h1';
@@ -115,10 +116,14 @@ function openPreview(event) {
 }
 
 export function mountBookReader(viewer) {
-  fillReader(viewer, { modal: false });
   const params = new URLSearchParams(location.search);
   const requested = Number(params.get('page'));
   const page = Number.isSafeInteger(requested) && requested > 0 ? requested : 1;
+  if (archiveOnly) {
+    location.replace(referencePageHref(page));
+    return;
+  }
+  fillReader(viewer, { modal: false });
   const text = params.get('text');
   const archive = viewer.querySelector('.pdf-preview-actions a');
   startReader(viewer, page, new AbortController().signal, number => {
@@ -132,11 +137,11 @@ export function mountBookReader(viewer) {
 export function createPdfLink(page, label = '查看原文 · 第 ' + page + ' 页', text) {
   const link = document.createElement('a');
   link.className = 'pdf-preview-link';
-  link.href = bookHref(page, text);
+  link.href = archiveOnly ? referencePageHref(page) : bookHref(page, text);
   link.target = '_blank';
   link.rel = 'noreferrer';
   link.textContent = label;
-  if (typeof HTMLDialogElement !== 'undefined' && HTMLDialogElement.prototype.showModal) {
+  if (!archiveOnly && typeof HTMLDialogElement !== 'undefined' && HTMLDialogElement.prototype.showModal) {
     link.dataset.pdfPage = page;
     if (text) link.dataset.pdfText = text;
     link.setAttribute('aria-haspopup', 'dialog');

@@ -51,6 +51,18 @@ The new-tab link opens the same reader at the current page. Its address tracks
 the page as you read, and it offers a separate link to the archive PDF.
 The PDF is not part of the build.
 
+For a hosted static build, set `VITE_ARCHIVE_PDF_ONLY=1` so citations open
+the corresponding page at the archive. Set `VITE_PMTILES_URL` to the HTTPS
+URL of the hosted map archive. It must support byte ranges and allow
+cross-origin requests from the website if it uses a different host.
+Set both values before running `npm run build`. Build from a clean checkout
+to keep the local multi-gigabyte extract out of the deployment.
+
+The hosted map uses the Worker in `infra/cloudflare/` and a private R2
+Standard bucket. Keep the Worker on the Free plan and serve the archive
+only through the Worker. Its daily request limit bounds public R2 reads
+because the Worker reads at most one byte range per request.
+
 To recreate the local archive, install the [PMTiles CLI](https://docs.protomaps.com/pmtiles/cli)
 and run the following before building the site:
 
