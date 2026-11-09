@@ -13,8 +13,8 @@ const routes = [
   ['/', '首页'],
   ['/map/', '地图'],
   ['/read/', '按章阅读'],
-  ['/records/', '地方档案'],
-  ['/sources/', '资料与口径'],
+  ['/records/', '地方记录'],
+  ['/sources/', '资料来源'],
 ].map(([path, label]) => ({ path, label, file: resolve(import.meta.dirname, '.' + path + 'index.html') }));
 
 const chapterRoutes = bookChapters.map(({ id, summary }) => ({
@@ -40,7 +40,7 @@ function pageMetadata(html, page) {
     'og:image': siteOrigin + '/share-card.jpg',
     'og:image:width': '1200',
     'og:image:height': '630',
-    'og:image:alt': '深色底上的《墓碑》碑拓与“中国大饥荒的地方记忆”字样',
+    'og:image:alt': '《墓碑》碑拓，旁边写着“中国大饥荒的地方记忆”',
   };
 
   const tags = [
@@ -75,7 +75,7 @@ function siteShell() {
     </header>`;
       const footer = `<footer class="site-footer">
       <span>《墓碑》独立阅读导览 · 原著 杨继绳</span>
-      <a href="#top">返回页首 ↑</a>
+      <a href="#top">回到顶部 ↑</a>
     </footer>`;
       if (html.includes('<!-- chapter-content -->')) {
         html = html.replace('<!-- chapter-content -->', readFileSync(new URL('./src/chapter-shell.html', import.meta.url), 'utf8'));

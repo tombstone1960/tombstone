@@ -33,7 +33,7 @@ function fillReader(viewer, { modal }) {
         <button type="button" data-zoom-step="-1" aria-label="缩小">−</button>
         <span data-zoom-level></span>
         <button type="button" data-zoom-step="1" aria-label="放大">+</button>
-        <button type="button" data-zoom-fit>适合宽度</button>
+        <button type="button" data-zoom-fit>适应宽度</button>
       </div>
       <button type="button" data-search-toggle aria-expanded="false" aria-controls="pdf-search-panel">搜索原文</button>
     </fieldset>
@@ -105,7 +105,7 @@ function openPreview(event) {
   const page = Number(event.currentTarget.dataset.pdfPage);
   const text = event.currentTarget.dataset.pdfText;
   dialog ??= createDialog();
-  dialog.querySelector('h2').textContent = '《墓碑》原文 · 引文第 ' + page + ' 页';
+  dialog.querySelector('h2').textContent = '《墓碑》原文 · 第 ' + page + ' 页';
   const fullPage = dialog.querySelector('.pdf-preview-actions a');
   session?.abort();
   session = new AbortController();

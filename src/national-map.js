@@ -71,12 +71,12 @@ const searchItems = [
     const records = site.records.map(slug => recordBySlug.get(slug));
     const names = [...new Set(records.map(record => regionOptions.get(record.region).name))];
     return {
-      type: 'site', id: site.id, name: site.name, label: names.join('、') + ' · 档案地点',
+      type: 'site', id: site.id, name: site.name, label: names.join('、') + ' · 地方记录',
       aliases: [site.id, ...names, ...records.map(record => record.place)],
     };
   }),
   ...placeMentions.map(mention => ({
-    type: 'mention', id: mention.id, name: mention.name, label: '原文地名 · 第 ' + mention.page + ' 页',
+    type: 'mention', id: mention.id, name: mention.name, label: '书中地名 · 第 ' + mention.page + ' 页',
     aliases: [mention.modern, mention.area, mention.id, ...(mention.area === '亳州' ? ['亳县'] : [])],
   })),
 ].sort((a, b) => Number(b.type === 'region') - Number(a.type === 'region') || nameOrder.compare(a.name, b.name));
@@ -225,7 +225,7 @@ export async function mountNationalMap(section, chapter) {
   });
   map.addControl(new NavigationControl({ showCompass: false }), 'top-right');
   map.touchZoomRotate.disableRotation();
-  map.getCanvas().setAttribute('aria-label', chapter ? '本章地图 · 《墓碑》地方记录' : '中国地图 · 省级估计与《墓碑》地方记录');
+  map.getCanvas().setAttribute('aria-label', chapter ? '本章地图 · 《墓碑》地方记录' : '中国大饥荒地图 · 各省死亡估计和地方记录');
 
   let mode = 'auto';
   let hoveredRegion = null;
@@ -256,7 +256,7 @@ export async function mountNationalMap(section, chapter) {
       map.setLayoutProperty(satelliteId, 'visibility', satellite ? 'visible' : 'none');
     }
     status.hidden = satellite || Boolean(basemap);
-    if (!status.hidden) status.textContent = '没有加载经典底图。省区和历史记录仍可查看。';
+    if (!status.hidden) status.textContent = '经典底图未能加载。仍可查看省区和地方记录。';
   }
 
   function updateLegend() {
@@ -331,7 +331,7 @@ export async function mountNationalMap(section, chapter) {
     setSelection({ region });
     if (chapter) {
       showDetails('地理背景', region.name, [
-        element('p', '这张地图只标出本页提到的地方记录。想看省级估计或其他地方的记录，可以打开全国地图。', 'atlas-detail-context'),
+        element('p', '本页地图标出本章相关地点。各省的死亡估计和其他地方的记录，请看全国地图。', 'atlas-detail-context'),
         link('在全国地图查看 ↗', mapHref({ region: region.id })),
       ]);
       return;
@@ -340,12 +340,12 @@ export async function mountNationalMap(section, chapter) {
     const nodes = [];
     if (regionHasEstimate(region)) {
       const stats = element('dl', '', 'atlas-stats');
-      for (const [label, value] of [['估计非正常死亡', deathText(region)], ['非正常死亡比例', rateText(region)]]) {
+      for (const [label, value] of [['估计非正常死亡人数', deathText(region)], ['非正常死亡比例', rateText(region)]]) {
         const stat = document.createElement('div');
         stat.append(element('dt', label), element('dd', value));
         stats.append(stat);
       }
-      nodes.push(stats, element('p', '这是曹树基对研究期间非正常死亡的估计。地方档案里的数字来自各地报告，统计的年份和范围可能不同。', 'atlas-detail-context'));
+      nodes.push(stats, element('p', '曹树基估算了比平常水平多出的死亡。各地报告中的数字可能涉及不同的年份和范围。', 'atlas-detail-context'));
       if (region.scope) nodes.push(element('p', region.scope, 'atlas-detail-context'));
       if (reading?.estimateNote) nodes.push(element('p', reading.estimateNote, 'atlas-detail-context'));
     } else {
@@ -363,10 +363,10 @@ export async function mountNationalMap(section, chapter) {
     actions.append(focus);
     if (reading) actions.append(link('地区导读 ↗', readingHref(reading.slug)));
     if (reading && sitesByRegion.has(region.id)) actions.append(link('地方记录 ↗', recordsHref('records-' + reading.slug)));
-    if (reading?.estimateAnchor) actions.append(link('比较原书估算 ↗', readingHref(reading.estimateAnchor)));
+    if (reading?.estimateAnchor) actions.append(link('看书里的其他估算 ↗', readingHref(reading.estimateAnchor)));
     if (regionHasEstimate(region)) actions.append(createPdfLink(279, '查看原著表 14-1 · 第 279 页'));
     nodes.push(actions);
-    showDetails(regionHasEstimate(region) ? '省级估计 · 曹树基' : '省区档案', region.name, nodes);
+    showDetails(regionHasEstimate(region) ? '死亡估计 · 曹树基' : '地区记录', region.name, nodes);
   }
 
   function showSite(site, preferredSlug) {
@@ -375,8 +375,8 @@ export async function mountNationalMap(section, chapter) {
     if (preferredSlug) records.sort((a, b) => Number(b.slug === preferredSlug) - Number(a.slug === preferredSlug));
     const relatedRegions = [...new Set(records.map(record => record.region))];
     const nodes = [element('p', site.level === '范围'
-      ? '这个圆点只标出合计数字涉及的地区。'
-      : '圆点按今天的地名标出大致位置（' + site.level + '）。', 'atlas-detail-context')];
+      ? '这项数字合计了多个地方。圆点只标出大致范围。'
+      : '圆点用今天的地名标出大致位置（' + site.level + '）。', 'atlas-detail-context')];
     for (const record of records) {
       nodes.push(createLocalityRecordEntry(
         record, readingByRegion.get(record.region)?.chapter, site.id, record.slug === preferredSlug,
@@ -402,20 +402,20 @@ export async function mountNationalMap(section, chapter) {
     setSelection({ mention });
     const chapterTitle = chapterLabel(bookChapters.find(entry => entry.id === mention.chapterId));
     const citation = createPdfLink(mention.page, '查看原文 · 第 ' + mention.page + ' 页', mention.text);
-    const locationSource = link('现代点位来源 ↗', 'https://www.geonames.org/' + mention.geonamesId + '/');
+    const locationSource = link('地图坐标来源 ↗', 'https://www.geonames.org/' + mention.geonamesId + '/');
     locationSource.target = '_blank';
     locationSource.rel = 'noreferrer';
     const location = element('section', '', 'atlas-mention-section');
     location.append(
       element('h4', '地图位置'),
-      element('p', '以今天的' + mention.area + mention.modern + '作位置参考。', 'atlas-detail-context'),
+      element('p', '地图用今天的' + mention.area + ' · ' + mention.modern + '标出大致位置。', 'atlas-detail-context'),
       locationSource,
     );
     const source = element('section', '', 'atlas-mention-section');
     const actions = element('div', '', 'atlas-detail-actions');
     actions.append(citation, link('本章导读 ↗', chapterHref(mention.chapterId)));
     source.append(element('h4', '原书出处'), element('p', chapterTitle, 'atlas-detail-context'), actions);
-    showDetails('《墓碑》 · 原文地名', mention.name, [
+    showDetails('《墓碑》 · 书中地名', mention.name, [
       element('p', mention.context, 'atlas-detail-context'),
       source,
       location,
@@ -503,7 +503,7 @@ export async function mountNationalMap(section, chapter) {
     if (target.type === 'region') {
       const { region } = target;
       return ['region:' + region.id, region.name, !chapter && regionHasEstimate(region)
-        ? deathText(region) + ' · ' + rateText(region) : '查看省区档案'];
+        ? '估计非正常死亡 ' + deathText(region) + ' · ' + rateText(region) : '点开查看地区记录'];
     }
     if (target.type === 'site') {
       const { site } = target;
@@ -644,7 +644,7 @@ export async function mountNationalMap(section, chapter) {
         else {
           setSelection();
           showDetails('现代底图 · ' + target.kind, target.name, [
-            element('p', '这是 OpenStreetMap 上的现代地名。图上的绛红色小圆点标出《墓碑》里有记录的地方。', 'atlas-detail-context'),
+            element('p', '这个地名来自 OpenStreetMap。点红色圆点可看《墓碑》里的地方记录。', 'atlas-detail-context'),
             link('查阅地方记录 ↗', '/records/'),
           ]);
         }

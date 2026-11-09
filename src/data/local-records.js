@@ -42,7 +42,7 @@ export const localRecords = [
     region: 'AH', slug: 'zhabei', level: '大队', place: '无为县红庙公社闸北大队',
     period: '1959 年 12 月反瞒产会议期间及会后不久',
     measure: '书中记载的饿死人数', value: '2,260 人',
-    context: '书中记载闸北大队原有 4,944 人。此数字属于红庙公社记述所涵盖的地区。',
+    context: '书中记载闸北大队原有 4,944 人。闸北大队属于红庙公社。',
     pages: '第 131–132 页（数字第 132 页）',
   },
   {
@@ -62,7 +62,7 @@ export const localRecords = [
   ...anhuiCountyRates.map(({ slug, place, rate }) => ({
     region: 'AH', slug, level: '县', place, period: '1960 年',
     measure: '年度上报死亡率', value: rate + '‰',
-    context: '杨继绳转引王维志据各省上报数字整理的县级资料。名单列的是当年上报死亡率超过 100‰ 的县，这里算的是每千人中有多少人死亡。书中提醒上报数字可能偏低。',
+    context: '杨继绳引用王维志整理的各省上报数据。名单列出当年每千人死亡超过 100 人的县。书中提醒，上报数字可能偏低。',
     pages: '第 156 页（另见第十三章第 278 页）',
   })),
   {

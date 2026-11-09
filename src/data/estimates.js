@@ -8,7 +8,7 @@ export const estimates = [
   { id: 'GZ', name: '贵州', location: [106.7, 26.85], deaths: 174.6, rate: 10.23, chapter: '第十二章《黑色的贵州》' },
   { id: 'HA', name: '河南', location: [113.65, 34.1], deaths: 293.9, rate: 6.12 },
   { id: 'HB', name: '湖北', location: [112.2, 30.9], deaths: 67.5, rate: 2.2 },
-  { id: 'HE', name: '河北', location: [115.45, 39.15], deaths: 61, rate: 1.1, members: ['BJ', 'TJ'], scope: '曹树基的河北统计区包含北京、天津。', chapter: '第十一章《燕赵悲歌》' },
+  { id: 'HE', name: '河北', location: [115.45, 39.15], deaths: 61, rate: 1.1, members: ['BJ', 'TJ'], scope: '曹树基估算河北时，把北京和天津也算了进去。', chapter: '第十一章《燕赵悲歌》' },
   { id: 'HL', name: '黑龙江', location: [127.2, 47.35], deaths: 19, rate: 1.21 },
   { id: 'HN', name: '湖南', location: [112.4, 27.45], deaths: 248.6, rate: 6.81 },
   { id: 'JL', name: '吉林', location: [126.1, 43.8], deaths: 12, rate: 0.94 },

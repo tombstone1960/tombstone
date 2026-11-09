@@ -29,8 +29,8 @@ export const reviewedPlaceMentions = [
     name: '项店公社', area: '河南息县', modern: '项店镇',
     location: [114.868, 32.380], geonamesId: 8727595,
     text: '息县项店公社人',
-    summary: '书中引述息县调查记录里的项店个案。',
-    context: '杨继绳在信阳事件一章引用地方材料，列举息县项店公社一户人家在饥饿中的遭遇及后来的处理。',
+    summary: '息县的调查记下了项店一户人家在饥饿中的遭遇。',
+    context: '杨继绳在信阳事件一章引用息县的调查，写到项店公社一户人家的遭遇，以及这件事后来怎么处理。',
   },
   {
     id: 'tongwei-biyu', chapterId: '02', page: 75,
@@ -86,7 +86,7 @@ export const reviewedPlaceMentions = [
     location: [117.817, 32.850], geonamesId: 1789925,
     text: '小溪河公社山河大队',
     summary: '凤阳县的材料列出山河大队的灾情。',
-    context: '杨继绳把山河大队放在凤阳县外流、浮肿和死亡的报告中讨论。此处标出报告提到的公社位置。',
+    context: '凤阳县的报告记下外流、浮肿和死亡，也提到山河大队。地图标的是大队所在的公社。',
   },
   {
     id: 'bozhou-lide', chapterId: '04', page: 142,
@@ -102,7 +102,7 @@ export const reviewedPlaceMentions = [
     location: [117.227, 32.749], geonamesId: 1804797,
     text: '考城大队代表王家凤',
     summary: '考城大队代表在会上说起家人的死亡。',
-    context: '杨继绳记录王家凤和另一位社员代表在会上陈述家人及大队的遭遇。点位取地名库同时收录为考城的今考西村。',
+    context: '杨继绳记下王家凤和另一位社员代表在会上说起家人和大队的遭遇。地图标在今天的考西村，地名库也把这里称为考城。',
   },
   {
     id: 'gongzhuling-liufangzi', chapterId: '05', page: 163,
@@ -133,8 +133,8 @@ export const reviewedPlaceMentions = [
     name: '高塍公社', area: '江苏宜兴市', modern: '高塍镇',
     location: [119.806, 31.457], geonamesId: 1810603,
     text: '高塍公社死亡率',
-    summary: '江苏地方材料把高塍与和桥的死亡情况并列。',
-    context: '这一段同时涉及几个地区和不同统计范围。高塍是其中一个公社，和桥的数字则只覆盖上水村和下水村两个生产队。',
+    summary: '书中列出高塍和和桥的死亡数字，两地统计的范围不同。',
+    context: '书中列了几个地方的数字。高塍的数字涉及公社，和桥的数字只算上水村和下水村两个生产队。',
   },
   {
     id: 'dongguan-wangniudun', chapterId: '07', page: 186,
@@ -150,7 +150,7 @@ export const reviewedPlaceMentions = [
     location: [114.226, 22.555], geonamesId: 1795790,
     text: '沙头角公社西坑大队社员口粮',
     summary: '书中比较西坑大队饥荒前后的口粮供应。',
-    context: '杨继绳在宝安一节写到病情和生活变化，并列出西坑大队 1957 年与 1960 年的口粮、副食和用油供应。点位采用今沙头角位置。',
+    context: '杨继绳写到宝安的病情和生活变化，并列出西坑大队 1957 年和 1960 年的口粮、副食和用油。地图标在今天的沙头角。',
   },
   {
     id: 'guantao-fangzhai', chapterId: '08', page: 207,
@@ -165,7 +165,7 @@ export const reviewedPlaceMentions = [
     name: '仲山公社', area: '山东嘉祥县', modern: '仲山镇',
     location: [116.254, 35.336], geonamesId: 8721445,
     text: '仲山公社一位干部说',
-    summary: '济宁调查把农民缺粮与基层干部的反应并列。',
+    summary: '济宁调查记下农民缺粮，也写到当地干部的反应。',
     context: '杨继绳在济宁一节记下仲山干部对下乡的畏惧，接着引述谭启龙从济宁写出的信，描述当地妇女和儿童挖麦苗充饥。',
   },
   {
@@ -182,7 +182,7 @@ export const reviewedPlaceMentions = [
     location: [120.890, 30.393], geonamesId: 1810685,
     text: '海宁县澉浦公社',
     summary: '浙江材料记下澉浦的口粮短缺与食堂停伙。',
-    context: '原书按当时辖区写作海宁县澉浦公社。杨继绳引述春耕期间粮食不足和多处食堂停止供餐的报告。点位是今海盐县澉浦镇。',
+    context: '杨继绳引用报告，写到春耕时缺粮，多处食堂停伙。澉浦公社当时属海宁县，地图标在今天的海盐县澉浦镇。',
   },
   {
     id: 'pinghu-xindai', chapterId: '09', page: 217,
@@ -221,7 +221,7 @@ export const reviewedPlaceMentions = [
     name: '伍仁公社', area: '河北安国市', modern: '伍仁村',
     location: [115.330, 38.296], geonamesId: 12600250,
     text: '伍仁公社伍仁大队',
-    summary: '伍仁大队的实收低于估产，留下的口粮不足。',
+    summary: '伍仁大队实际收成低于估计，留下的口粮也不够。',
     context: '杨继绳将县里用来定征购的估产，与伍仁大队实际收成和留粮并列。书中记载 1959 年春，缺粮进一步加重。',
   },
   {
@@ -261,7 +261,7 @@ export const reviewedPlaceMentions = [
     name: '邯郸市', area: '河北邯郸', modern: '市区',
     location: [114.488, 36.610], geonamesId: 1808963,
     text: '邯郸市轻工业局干部石旭东',
-    summary: '石旭东写信反映邯郸的特需供应。',
+    summary: '石旭东写信说明邯郸的干部和普通居民领到的物资有何差别。',
     context: '1960 年 10 月，石旭东向中央写信，列举普通居民与部分干部在肉食和节日供应上的差别。杨继绳在城市生活一章引述此信。',
   },
   {
@@ -270,7 +270,7 @@ export const reviewedPlaceMentions = [
     location: [119.432, 39.839], geonamesId: 6586383,
     text: '在北戴河召开的中央工作会议',
     summary: '书中借北戴河会议材料追查中苏债务。',
-    context: '杨继绳引用吴冷西的回忆，比较 1960 年中央工作会议讨论的苏联援助和还款数字。点位用北戴河区作参考。',
+    context: '杨继绳引用吴冷西的回忆，比较 1960 年中央工作会议谈到的苏联援助和还款数字。地图标在北戴河区。',
   },
   {
     id: 'nanning-conference', chapterId: '16', page: 316,
@@ -374,15 +374,15 @@ export const reviewedPlaceMentions = [
     location: [107.345, 30.334], geonamesId: 1809467,
     text: '四川省垫江县在西山虾蟆湾一带',
     summary: '书中转述当时公安材料记载的垫江案件。',
-    context: '杨继绳在讨论社会震动与控制时列举当时报告里的案件。这里的省名沿用 1961 年的辖区，地图点位以今重庆垫江县城作参考。',
+    context: '杨继绳在讨论社会动荡时列举了当时报告中的案件。省名沿用 1961 年的辖区，地图标在今天的重庆垫江县城。',
   },
   {
     id: 'hangzhou-mess-halls', chapterId: '26', page: 501,
     name: '杭州会议', area: '浙江杭州', modern: '市区',
     location: [120.161, 30.294], geonamesId: 1808926,
     text: '杭州会议更号召',
-    summary: '书中提到 1960 年杭州会议推动公共食堂普遍化。',
-    context: '杨继绳把杭州会议放在 1960 年初兴办城市公社的政策过程中，说明公共食堂如何继续推广。点位以杭州市区作参考。',
+    summary: '书中提到，1960 年杭州会议推动各地继续办公共食堂。',
+    context: '杨继绳写到 1960 年初兴办城市公社的政策，以及杭州会议怎样推动公共食堂继续推广。地图标在杭州市区。',
   },
   {
     id: 'yanqing-dabailao', chapterId: '28', page: 522,
@@ -397,7 +397,7 @@ export const reviewedPlaceMentions = [
     name: '卢王庄公社', area: '河北秦皇岛市', modern: '卢王庄村',
     location: [119.342, 39.831], geonamesId: 9937645,
     text: '卢王庄公社桃园大队',
-    summary: '书中把王光美的“桃园经验”放回其工作队所在的地方。',
+    summary: '书中写到王光美和工作队在桃园大队的经历。',
     context: '杨继绳在这里谈到王光美到当时抚宁县卢王庄公社桃园大队蹲点，接着叙述她以另一身份进入工作队的经过。',
   },
 ];

@@ -180,7 +180,7 @@ export function mountPdfSearch(reader, book, signal, currentPage, goToPage, pass
       searching = false;
       matches = findMatches(pages, term);
       if (!matches.length) {
-        status.textContent = '没有找到这段文字';
+        status.textContent = '没有找到匹配的文字';
         return;
       }
       previous.disabled = next.disabled = matches.length === 1;

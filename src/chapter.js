@@ -102,7 +102,7 @@ fill(document.querySelector('.chapter-hero'), {
   part: chapter.part,
   number: chapter.number ? '第' + ordinals[chapter.number - 1] + '章' : '《墓碑》· ' + chapter.part,
   title: sectionName || chapter.title,
-  summary: section ? '这一节出自《' + chapter.title + '》。下面是本站已整理的笔记和地方记录。想读完整内容，可以打开原文。' : chapter.summary,
+  summary: section ? '这一节出自《' + chapter.title + '》。下方是本站的笔记和记录，也可以直接读原文。' : chapter.summary,
   pages: '2007 年 8 月参考版 · PDF 第 ' + startPage + ' 页起',
 });
 if (section) document.title = sectionName + ' · ' + chapter.title + ' · 《墓碑》';
@@ -209,7 +209,7 @@ for (const [value, title, scope, page, record] of figures) {
   const card = node('article', '', 'chapter-stat');
   card.append(node('h3', title), node('strong', value), node('p', scope));
   if (record) {
-    card.append(node('p', record.context), link('查看地方档案 ↗', recordsHref('local-' + record.slug)));
+    card.append(node('p', record.context), link('查看完整记录 ↗', recordsHref('local-' + record.slug)));
     const sites = sitesByRecord.get(record.slug) ?? [];
     for (const site of sites) {
       card.append(placeLink(sites.length === 1 ? '在地图上看' : site.name, record, site));
@@ -236,11 +236,11 @@ neighbors.append(link(section ? '返回整章' : '返回原著目录', section ?
 if (bookChapters[index + 1]) neighbors.append(link(chapterLabel(bookChapters[index + 1]) + ' →', chapterHref(bookChapters[index + 1].id)));
 
 const mapNote = records.length
-  ? '这里有 ' + records.length + ' 条地方记录。点圆点可以跳到相关段落，也可以点阅读笔记里的地名，在地图上找到它。'
+  ? '这里有 ' + records.length + ' 条地方记录。点地图圆点可找相关段落，点笔记里的地名可在地图上找到它。'
   : mentions.length ? ''
-  : '可以用这张地图找地名。这一页暂时没有标在地图上的地方记录。';
+  : '本页暂未标出地方记录。你仍可搜索地名。';
 get('chapter-map-note').textContent = mapNote + (mentions.length
-  ? '地图标出了 ' + mentions.length + ' 处原文地名。放大后，点空心标记可查看详情和出处。'
+  ? '地图标出 ' + mentions.length + ' 个书中地名。放大后点空心圆，可查看记录和页码。'
   : '');
 const atlas = get('atlas');
 let mapReady;

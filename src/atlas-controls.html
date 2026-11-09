@@ -31,15 +31,15 @@
                 <p id="atlas-basemap-status" class="atlas-basemap-status" role="status" hidden></p>
               </fieldset>
               <fieldset id="atlas-layers" disabled>
-                <legend>历史资料</legend>
+                <legend>地图显示内容</legend>
                 <div class="atlas-choice-list">
-                  <label class="atlas-choice"><input type="radio" name="atlas-mode" value="auto" checked><span><strong>随缩放</strong><small>看全国估计，放大查看地方记录</small></span></label>
-                  <label class="atlas-choice"><input type="radio" name="atlas-mode" value="estimates"><span><strong>省级估计</strong><small>按省区查看死亡人数和比例</small></span></label>
-                  <label class="atlas-choice"><input type="radio" name="atlas-mode" value="records"><span><strong>地方记录</strong><small>查看地方档案和原文地名</small></span></label>
+                  <label class="atlas-choice"><input type="radio" name="atlas-mode" value="auto" checked><span><strong>随缩放切换</strong><small>先看各省死亡估计，放大后看地方记录</small></span></label>
+                  <label class="atlas-choice"><input type="radio" name="atlas-mode" value="estimates"><span><strong>各省死亡估计</strong><small>看各省的估计人数和比例</small></span></label>
+                  <label class="atlas-choice"><input type="radio" name="atlas-mode" value="records"><span><strong>地方记录</strong><small>看书里的记录和地名</small></span></label>
                 </div>
               </fieldset>
               <fieldset id="atlas-metric" disabled>
-                <legend>省级圆点大小</legend>
+                <legend>各省圆点按什么定大小？</legend>
                 <div class="atlas-choice-pair">
                   <label class="atlas-choice"><input type="radio" name="atlas-metric" value="deaths" checked><span>估计死亡人数</span></label>
                   <label class="atlas-choice"><input type="radio" name="atlas-metric" value="rate"><span>非正常死亡比例</span></label>
@@ -71,11 +71,11 @@
           <summary>图例</summary>
           <div class="atlas-legend-body">
             <span id="atlas-estimate-key">
-              <i class="atlas-key-dot"></i> 省级估计 · <span id="atlas-size-label">圆的大小表示估计死亡人数</span>
+              <i class="atlas-key-dot"></i> 各省死亡估计 · <span id="atlas-size-label">圆的大小表示估计死亡人数</span>
               <span class="atlas-rate-key">颜色表示非正常死亡比例 <span id="atlas-rate-scale" class="atlas-rate-scale"></span></span>
             </span>
-            <span id="atlas-record-key" hidden><i class="atlas-key-dot atlas-key-record"></i> 地方记录 · 数字表示附近有几个记录地点</span>
-            <span id="atlas-mention-key" hidden><i class="atlas-key-dot atlas-key-mention"></i> 原文地名 · 放大后点空心标记看详情</span>
+            <span id="atlas-record-key" hidden><i class="atlas-key-dot atlas-key-record"></i> 地方记录 · 数字表示附近有几个地点</span>
+            <span id="atlas-mention-key" hidden><i class="atlas-key-dot atlas-key-mention"></i> 书中地名 · 放大后点空心圆查看</span>
             <a href="/sources/#locality-source">地点怎么标在地图上？</a>
           </div>
         </details>
