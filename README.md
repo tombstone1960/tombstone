@@ -56,13 +56,17 @@ EOX and requires internet access. The citation overlay uses PDF.js and loads the
 reference PDF on demand through a fixed Vite route to the external archive.
 The new-tab link opens the same reader at the current page. Its address tracks
 the page as you read, and it offers a separate link to the archive PDF.
-The PDF is not part of the build.
+The PDF is kept out of Git.
 
 For a hosted static build, set `VITE_ARCHIVE_PDF_ONLY=1` so citations open
-the corresponding page at the archive. Set `VITE_PMTILES_URL` to the HTTPS
+the corresponding page at the archive. Deployments with permission to
+republish the PDF can set `VITE_HOST_REFERENCE_PDF=1` to enable the embedded
+reader and serve the exact cited edition as a static file. The build verifies
+the archive copy against its SHA-256 checksum before including it.
+Set `VITE_PMTILES_URL` to the HTTPS
 URL of the hosted map archive. It must support byte ranges and allow
 cross-origin requests from the website if it uses a different host.
-Set both values before running `npm run build`. Build from a clean checkout
+Set these values before running `npm run build`. Build from a clean checkout
 to keep the local multi-gigabyte extract out of the deployment.
 
 The hosted map uses the Worker in `infra/cloudflare/` and a private R2

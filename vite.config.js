@@ -1,7 +1,8 @@
 import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
-import { defineConfig } from 'vite';
-import { referencePdf } from './src/data/citations.js';
+import { createHash } from 'node:crypto';
+import { defineConfig, loadEnv } from 'vite';
+import { referencePdf, referencePdfPath } from './src/data/citations.js';
 import { bookChapters } from './src/data/book-chapters.js';
 import { alternateLocales, languageSwitch, localizePageHtml, siteOrigin } from './src/localization/site-pages.js';
 import { englishPages, localePath } from './src/localization/routes.js';
@@ -162,9 +163,35 @@ function localizedSite() {
   };
 }
 
+function referencePdfAsset() {
+  // The cited page numbers belong to this exact edition.
+  const expectedHash = 'd3481b814f470ad333abbe994eb8fde11c25ace57fbd049eff9ab747a10ebe23';
+  let hostReference;
+  return {
+    name: 'tombstone-reference-pdf',
+    config(_config, { mode }) {
+      hostReference = loadEnv(mode, import.meta.dirname).VITE_HOST_REFERENCE_PDF === '1';
+      if (hostReference) return { preview: { proxy: {} } };
+    },
+    async generateBundle() {
+      if (!hostReference) return;
+      const response = await fetch(referencePdf, {
+        redirect: 'error',
+        signal: AbortSignal.timeout(30_000),
+      });
+      if (!response.ok) throw new Error('Reference PDF download failed (HTTP ' + response.status + ')');
+      const source = Buffer.from(await response.arrayBuffer());
+      if (createHash('sha256').update(source).digest('hex') !== expectedHash) {
+        throw new Error('Reference PDF differs from the cited edition');
+      }
+      this.emitFile({ type: 'asset', fileName: referencePdfPath.slice(1), source });
+    },
+  };
+}
+
 export default defineConfig({
   appType: 'mpa',
-  plugins: [siteShell(), localizedSite()],
+  plugins: [siteShell(), localizedSite(), referencePdfAsset()],
   server: {
     proxy: {
       '^/reference/tombstone\\.pdf$': {

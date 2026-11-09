@@ -1,4 +1,5 @@
 export const referencePdf = 'https://omeka.minjian-danganguan.org/files/original/f14ae024ed5a2ae91941450ee01b65a59ed2cbfa.pdf';
+export const referencePdfPath = '/reference/tombstone.pdf';
 
 export function bookCitation(chapter, pages) {
   return '杨继绳《墓碑》 · ' + chapter + ' · 参考 PDF ' + pages;

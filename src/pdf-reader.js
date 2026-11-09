@@ -2,6 +2,7 @@ import { getDocument, GlobalWorkerOptions, TextLayer } from 'pdfjs-dist/build/pd
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { mountPdfSearch } from './pdf-search.js';
 import { localText as t } from './localization/locale.js';
+import { referencePdfPath } from './data/citations.js';
 
 GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -10,7 +11,7 @@ const fitZoom = zoomLevels.indexOf(1);
 const pageInset = 12;
 
 export async function readPdf(reader, initialPage, signal, onPageChange, text) {
-  const task = getDocument({ url: '/reference/tombstone.pdf', enableXfa: false });
+  const task = getDocument({ url: referencePdfPath, enableXfa: false });
   signal.addEventListener('abort', () => task.destroy().catch(() => {}), { once: true });
   const book = await task.promise;
   if (signal.aborted) return;

@@ -6,7 +6,8 @@ import './pdf-preview.css';
 
 let dialog;
 let session;
-const archiveOnly = import.meta.env.VITE_ARCHIVE_PDF_ONLY === '1';
+const archiveOnly = import.meta.env.VITE_ARCHIVE_PDF_ONLY === '1'
+  && import.meta.env.VITE_HOST_REFERENCE_PDF !== '1';
 
 function fillReader(viewer, { modal }) {
   const heading = modal ? 'h2' : 'h1';
@@ -18,7 +19,8 @@ function fillReader(viewer, { modal }) {
         <p>杨继绳 著 · 2007 年 8 月参考版 · 民间档案馆藏</p>
       </div>
       <div class="pdf-preview-actions">
-        <a target="_blank" rel="noreferrer">${modal ? '在新标签页打开 ↗' : '档案馆 PDF ↗'}</a>
+        ${modal ? '<a data-full-reader target="_blank" rel="noreferrer">在新标签页打开 ↗</a>' : ''}
+        <a data-archive-link target="_blank" rel="noreferrer">打开档案馆 PDF ↗</a>
         ${modal ? '<form method="dialog"><button type="submit" autofocus>关闭预览</button></form>' : appearanceControl}
       </div>
     </header>
@@ -108,12 +110,14 @@ function openPreview(event) {
   const text = event.currentTarget.dataset.pdfText;
   dialog ??= createDialog();
   dialog.querySelector('h2').textContent = t('《墓碑》原文 · 第 ' + page + ' 页');
-  const fullPage = dialog.querySelector('.pdf-preview-actions a');
+  const fullPage = dialog.querySelector('[data-full-reader]');
+  const archive = dialog.querySelector('[data-archive-link]');
   session?.abort();
   session = new AbortController();
   dialog.showModal();
   startReader(dialog, page, session.signal, number => {
     fullPage.href = bookHref(number, number === page ? text : undefined);
+    archive.href = referencePageHref(number);
   }, text);
 }
 
@@ -127,7 +131,7 @@ export function mountBookReader(viewer) {
   }
   fillReader(viewer, { modal: false });
   const text = params.get('text');
-  const archive = viewer.querySelector('.pdf-preview-actions a');
+  const archive = viewer.querySelector('[data-archive-link]');
   startReader(viewer, page, new AbortController().signal, number => {
     archive.href = referencePageHref(number);
     const url = bookHref(number, number === page ? text : undefined);
