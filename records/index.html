@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="按省区查阅《墓碑》中记载的县市、乡村与公社。">
+    <title>地方档案 · 《墓碑》阅读导览</title>
+    <link rel="stylesheet" href="/src/site.css">
+  </head>
+  <body>
+    <!-- site-header -->
+    <main id="top">
+      <section id="local-records" class="page-section local-section" aria-labelledby="local-title">
+        <div class="section-intro">
+          <p class="eyebrow">地方档案 · 按省区查找</p>
+          <h1 id="local-title">县市、乡村与公社</h1>
+          <p>这里收录了书中的地方报告、调查数字和村庄记述。每条都注明出处，数字沿用原来的单位。有些记录涉及同一批人，数字不能直接相加。</p>
+        </div>
+        <nav id="local-index" class="local-index" aria-label="地方记录地区索引"></nav>
+        <div id="local-list"></div>
+      </section>
+    </main>
+    <!-- site-footer -->
+
+    <template id="local-group-template">
+      <section class="local-group">
+        <div class="local-group-header">
+          <h2 data-field="name"></h2>
+          <a data-reading-link>阅读地区导读 ↗</a>
+        </div>
+        <div class="local-grid"></div>
+      </section>
+    </template>
+    <template id="local-record-template">
+      <article class="local-record" tabindex="-1">
+        <p class="eyebrow"><span data-field="level"></span><span aria-hidden="true">/</span><span data-field="period"></span></p>
+        <h3 data-field="place"></h3>
+        <dl><dt data-field="measure"></dt><dd data-field="value"></dd></dl>
+        <p class="local-context" data-field="context"></p>
+        <span class="citation" data-field="citation"></span>
+        <a class="record-map-link" data-local-map hidden>在地图中查看 ↗</a>
+      </article>
+    </template>
+    <script type="module" src="/src/records.js"></script>
+  </body>
+</html>

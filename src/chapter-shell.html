@@ -1,0 +1,40 @@
+<main id="top" class="chapter-page">
+  <header class="chapter-hero">
+    <div class="chapter-wrap">
+      <nav class="chapter-breadcrumb" aria-label="阅读路径"><a href="/read/">原著目录</a> <span aria-hidden="true">/</span> <span data-field="part"></span></nav>
+      <p class="eyebrow" data-field="number"></p>
+      <h1 data-field="title"></h1>
+      <p class="chapter-summary" data-field="summary"></p>
+      <div class="chapter-meta"><span data-field="pages"></span><span id="chapter-original"></span></div>
+    </div>
+  </header>
+  <div class="chapter-wrap chapter-body">
+    <nav id="chapter-toc" class="chapter-toc" aria-label="本页内容">
+      <a href="#passages">阅读笔记</a><a href="#chapter-map">本章地图</a>
+      <a href="#chapter-figures" hidden>书中的数字</a><a href="#chapter-people" hidden>书中人物</a>
+    </nav>
+    <section id="chapter-figures" class="chapter-band" hidden aria-labelledby="figures-title">
+      <h2 id="figures-title">书中的数字</h2>
+      <div id="chapter-figure-list" class="chapter-figures"></div>
+    </section>
+    <div class="chapter-columns">
+      <section id="passages" aria-labelledby="passages-title">
+        <h2 id="passages-title">阅读笔记</h2>
+        <div id="chapter-passages" class="evidence-list"></div>
+      </section>
+      <section id="chapter-map" class="chapter-map" aria-labelledby="chapter-map-title">
+        <h2 id="chapter-map-title">本章地图</h2>
+        <p id="chapter-map-note" class="chapter-map-note"></p>
+        <div id="atlas" class="chapter-atlas">
+          <!-- atlas-controls -->
+        </div>
+        <a class="chapter-atlas-link" href="/map/">打开全国地图 ↗</a>
+      </section>
+    </div>
+    <section id="chapter-people" class="chapter-band" hidden aria-labelledby="people-title">
+      <h2 id="people-title">书中人物</h2>
+      <div id="chapter-person-list" class="chapter-people"></div>
+    </section>
+    <nav id="chapter-navigation" class="chapter-navigation" aria-label="相邻章节"></nav>
+  </div>
+</main>

@@ -1,0 +1,81 @@
+        <div class="atlas-toolbar">
+          <div id="atlas-search" class="atlas-search">
+            <label for="atlas-place-search" class="visually-hidden">查找地点</label>
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+            <input id="atlas-place-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="atlas-search-results" placeholder="搜索地点" autocomplete="off" disabled>
+            <div class="atlas-search-popover" hidden>
+              <ul id="atlas-search-results" role="listbox" aria-label="地点搜索结果"></ul>
+              <p class="atlas-search-empty" role="status" hidden>没找到这个地方。试试省名，或换个地名搜索。</p>
+            </div>
+          </div>
+          <details id="atlas-settings" class="atlas-settings">
+            <summary>
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></svg>
+              <span class="atlas-settings-title">地图设置</span>
+            </summary>
+            <div class="atlas-settings-panel">
+              <fieldset id="atlas-basemap" disabled>
+                <legend>底图</legend>
+                <div class="atlas-choice-pair">
+                  <label class="atlas-choice atlas-base-choice">
+                    <input type="radio" name="atlas-basemap" value="classic" checked>
+                    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15m6-12v15"/></svg>
+                    <span><strong>经典地图</strong><small>街道与地名</small></span>
+                  </label>
+                  <label class="atlas-choice atlas-base-choice">
+                    <input type="radio" name="atlas-basemap" value="satellite">
+                    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 6-6 5 6 2-3 5 5"/><circle cx="16" cy="9" r="1"/></svg>
+                    <span><strong>卫星影像</strong><small>2016–2017</small></span>
+                  </label>
+                </div>
+                <p id="atlas-basemap-status" class="atlas-basemap-status" role="status" hidden></p>
+              </fieldset>
+              <fieldset id="atlas-layers" disabled>
+                <legend>历史资料</legend>
+                <div class="atlas-choice-list">
+                  <label class="atlas-choice"><input type="radio" name="atlas-mode" value="auto" checked><span><strong>随缩放</strong><small>看全国估计，放大查看地方记录</small></span></label>
+                  <label class="atlas-choice"><input type="radio" name="atlas-mode" value="estimates"><span><strong>省级估计</strong><small>按省区查看死亡人数和比例</small></span></label>
+                  <label class="atlas-choice"><input type="radio" name="atlas-mode" value="records"><span><strong>地方记录</strong><small>查看地方档案和原文地名</small></span></label>
+                </div>
+              </fieldset>
+              <fieldset id="atlas-metric" disabled>
+                <legend>省级圆点大小</legend>
+                <div class="atlas-choice-pair">
+                  <label class="atlas-choice"><input type="radio" name="atlas-metric" value="deaths" checked><span>估计死亡人数</span></label>
+                  <label class="atlas-choice"><input type="radio" name="atlas-metric" value="rate"><span>非正常死亡比例</span></label>
+                </div>
+              </fieldset>
+            </div>
+          </details>
+        </div>
+        <div class="atlas-layout">
+          <div class="atlas-map-frame">
+            <div id="map" aria-label="中国地图"></div>
+            <button id="atlas-reset" type="button" title="全国视图" aria-label="全国视图" disabled>
+              <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H4v5m11-5h5v5m-5 11h5v-5M9 20H4v-5"/><circle cx="12" cy="12" r="2"/></svg>
+            </button>
+            <p id="atlas-loading" class="atlas-loading" role="status">正在加载中国地图…</p>
+            <div id="atlas-tooltip" class="atlas-tooltip" aria-hidden="true" hidden>
+              <strong></strong><span></span><small hidden></small>
+            </div>
+          </div>
+          <aside class="atlas-details" aria-labelledby="atlas-detail-title" hidden>
+            <button id="atlas-close-details" type="button" aria-label="关闭地点详情">×</button>
+            <p class="eyebrow" id="atlas-detail-kind"></p>
+            <h3 id="atlas-detail-title" tabindex="-1"></h3>
+            <div id="atlas-detail-content"></div>
+          </aside>
+          <p id="atlas-announcement" class="visually-hidden" role="status"></p>
+        </div>
+        <details class="atlas-legend">
+          <summary>图例</summary>
+          <div class="atlas-legend-body">
+            <span id="atlas-estimate-key">
+              <i class="atlas-key-dot"></i> 省级估计 · <span id="atlas-size-label">圆的大小表示估计死亡人数</span>
+              <span class="atlas-rate-key">颜色表示非正常死亡比例 <span id="atlas-rate-scale" class="atlas-rate-scale"></span></span>
+            </span>
+            <span id="atlas-record-key" hidden><i class="atlas-key-dot atlas-key-record"></i> 地方记录 · 数字表示附近有几个记录地点</span>
+            <span id="atlas-mention-key" hidden><i class="atlas-key-dot atlas-key-mention"></i> 原文地名 · 放大后点空心标记看详情</span>
+            <a href="/sources/#locality-source">地点怎么标在地图上？</a>
+          </div>
+        </details>
