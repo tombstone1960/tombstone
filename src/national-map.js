@@ -12,7 +12,11 @@ import provinces from './data/provinces.json';
 import { createLocalityRecordEntry } from './locality-record-entry.js';
 import { createPlaceSearch } from './atlas-search.js';
 import { createPdfLink } from './pdf-preview.js';
-import { chapterHref, mapHref, readingHref, recordsHref } from './routes.js';
+import { chapterHref, localizedHref, mapHref, readingHref, recordsHref } from './routes.js';
+import { english, locale, localText as t } from './localization/locale.js';
+import { recordMeasure, recordValue, regionName, regionScope, siteName } from './localization/atlas-copy.js';
+import { englishGuides } from './localization/routes.js';
+import { guides } from './localization/english-content.js';
 import { atlasLayer, atlasOverlays, basemapLayers, estimateColors, estimateLayers, estimateRadius, fadeEnd, fadeStart, mentionZoom, recordLayers } from './atlas-style.js';
 
 const chinaBounds = [[73.2, 18], [135.1, 53.7]];
@@ -24,9 +28,9 @@ const satelliteSource = {
   tileSize: 256, maxzoom: 14,
   attribution: '<a href="https://cloudless.eox.at" target="_blank" rel="noreferrer">EOxCloudless</a> by <a href="https://eox.at" target="_blank" rel="noreferrer">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2016 &amp; 2017) · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>',
 };
-const number = new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 2 });
-const nameOrder = new Intl.Collator('zh-CN', { collation: 'pinyin' });
-const deathText = record => number.format(record.deaths) + ' 万人';
+const number = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
+const nameOrder = new Intl.Collator(english ? 'en' : 'zh-u-co-pinyin');
+const deathText = record => english ? number.format(Math.round(record.deaths * 10_000)) : t(number.format(record.deaths) + ' 万人');
 const rateText = record => record.rate.toFixed(2) + '%';
 const regionHasEstimate = region => 'deaths' in region;
 const provinceById = new Map(provinces.features.map(feature => [feature.properties.id, feature]));
@@ -56,28 +60,45 @@ for (const site of localSites) {
   }
 }
 
-const siteProperties = ({ id, name }) => ({ siteId: id, name });
+const siteProperties = site => ({ siteId: site.id, name: siteName(site) });
 const siteData = pointCollection(localSites, siteProperties);
-const estimateData = pointCollection(estimates, ({ id, name, deaths, rate }) => ({ id, name, deaths, rate }));
+const estimateData = pointCollection(estimates, region => ({
+  id: region.id, name: regionName(region), deaths: region.deaths, rate: region.rate,
+}));
 const maximum = { deaths: Math.max(...estimates.map(x => x.deaths)), rate: Math.max(...estimates.map(x => x.rate)) };
 const modernLayers = ['places_locality', 'places_subplace', 'places_region'];
-const placeKinds = { city: '城市', town: '城镇', village: '村落', hamlet: '小村落', suburb: '城区', quarter: '社区', province: '省区' };
+const placeKinds = {
+  city: t('城市', 'City'), town: t('城镇', 'Town'), village: t('村落', 'Village'), hamlet: t('小村落', 'Hamlet'),
+  suburb: t('城区', 'Suburb'), quarter: t('社区', 'Neighborhood'), province: t('省区', 'Province'),
+};
+const nearbyPlaces = count => t('附近 ' + count + ' 个地点', count + ' nearby places');
+const localRecordsTitle = t('《墓碑》 · 地方记录', 'Tombstone · Local records');
+const guideHref = reading => english
+  ? englishGuides[reading.slug] ? chapterHref(englishGuides[reading.slug]) : '/read/#' + reading.slug
+  : readingHref(reading.slug);
 const searchItems = [
   ...[...regionOptions.values()].map(region => ({
-    type: 'region', id: region.id, name: region.name, label: '省区',
-    aliases: [region.id, ...(region.members ?? []).map(id => provinceById.get(id).properties.name)],
+    type: 'region', id: region.id, name: regionName(region), label: t('省区', 'Province or region'),
+    aliases: [region.id, region.name, ...(region.members ?? []).flatMap(id => {
+      const province = provinceById.get(id).properties;
+      return [province.name, regionName(province)];
+    })],
   })),
   ...localSites.map(site => {
     const records = site.records.map(slug => recordBySlug.get(slug));
-    const names = [...new Set(records.map(record => regionOptions.get(record.region).name))];
+    const regions = [...new Set(records.map(record => regionOptions.get(record.region)))];
     return {
-      type: 'site', id: site.id, name: site.name, label: names.join('、') + ' · 地方记录',
-      aliases: [site.id, ...names, ...records.map(record => record.place)],
+      type: 'site', id: site.id, name: siteName(site),
+      label: regions.map(regionName).join(english ? ', ' : '、') + t(' · 地方记录', ' · Local records'),
+      aliases: [site.id, site.id.replaceAll('-', ' '), site.name, ...regions.flatMap(region => [region.name, regionName(region)]),
+        ...records.flatMap(record => [record.place, t(record.place)])],
     };
   }),
   ...placeMentions.map(mention => ({
-    type: 'mention', id: mention.id, name: mention.name, label: '书中地名 · 第 ' + mention.page + ' 页',
-    aliases: [mention.modern, mention.area, mention.id, ...(mention.area === '亳州' ? ['亳县'] : [])],
+    type: 'mention', id: mention.id, name: siteName(mention),
+    label: t('书中地名 · 第 ' + mention.page + ' 页', 'Place in book · p. ' + mention.page),
+    aliases: [mention.name, mention.modern, t(mention.modern), mention.area, t(mention.area), mention.id,
+      ...(mention.area === '亳州' ? ['亳县', t('亳县')] : [])],
   })),
 ].sort((a, b) => Number(b.type === 'region') - Number(a.type === 'region') || nameOrder.compare(a.name, b.name));
 
@@ -92,7 +113,7 @@ function pointCollection(items, properties) {
 
 function element(tag, value, className) {
   const node = document.createElement(tag);
-  node.textContent = value;
+  node.textContent = t(value);
   if (className) node.className = className;
   return node;
 }
@@ -165,8 +186,8 @@ export async function mountNationalMap(section, chapter) {
   let viewBounds = chinaBounds;
   if (chapter) {
     controls.hidden = true;
-    settingsLabel.querySelector('.atlas-settings-title').textContent = '底图';
-    reset.title = '本章范围';
+    settingsLabel.querySelector('.atlas-settings-title').textContent = t('底图', 'Basemap');
+    reset.title = t('本章范围', 'Reset to chapter area');
     reset.setAttribute('aria-label', reset.title);
     const focus = regionByProvince.get(chapter.focus);
     const places = sites.length ? sites : mentions;
@@ -211,21 +232,23 @@ export async function mountNationalMap(section, chapter) {
         regions: { type: 'geojson', data: provinces, promoteId: 'id' },
         estimates: { type: 'geojson', data: estimateData },
         historical: { type: 'geojson', data: chapter ? pointCollection(sites, siteProperties) : siteData, cluster: true, clusterRadius: 37, clusterMaxZoom: 11 },
-        mentions: { type: 'geojson', data: pointCollection(mentions, ({ id, name }) => ({ mentionId: id, name })) },
+        mentions: { type: 'geojson', data: pointCollection(mentions, mention => ({ mentionId: mention.id, name: siteName(mention) })) },
       },
       layers: initialLayers,
     },
     locale: {
-      'NavigationControl.ZoomIn': '放大',
-      'NavigationControl.ZoomOut': '缩小',
-      'CooperativeGesturesHandler.WindowsHelpText': '按住 Ctrl 并滚动以缩放',
-      'CooperativeGesturesHandler.MacHelpText': '按住 ⌘ 并滚动以缩放',
-      'CooperativeGesturesHandler.MobileHelpText': '用双指移动地图',
+      'NavigationControl.ZoomIn': t('放大', 'Zoom in'),
+      'NavigationControl.ZoomOut': t('缩小', 'Zoom out'),
+      'CooperativeGesturesHandler.WindowsHelpText': t('按住 Ctrl 并滚动以缩放', 'Hold Ctrl and scroll to zoom'),
+      'CooperativeGesturesHandler.MacHelpText': t('按住 ⌘ 并滚动以缩放', 'Hold ⌘ and scroll to zoom'),
+      'CooperativeGesturesHandler.MobileHelpText': t('用双指移动地图', 'Use two fingers to move the map'),
+      'AttributionControl.ToggleAttribution': t('显示或隐藏地图来源', 'Toggle map attribution'),
     },
   });
   map.addControl(new NavigationControl({ showCompass: false }), 'top-right');
   map.touchZoomRotate.disableRotation();
-  map.getCanvas().setAttribute('aria-label', chapter ? '本章地图 · 《墓碑》地方记录' : '中国大饥荒地图 · 各省死亡估计和地方记录');
+  map.getCanvas().setAttribute('aria-label', chapter ? t('本章地图 · 《墓碑》地方记录', 'Chapter map · Local records')
+    : t('中国大饥荒地图 · 各省死亡估计和地方记录', 'Great Chinese Famine map · Provincial estimates and local records'));
 
   let mode = 'auto';
   let hoveredRegion = null;
@@ -256,7 +279,8 @@ export async function mountNationalMap(section, chapter) {
       map.setLayoutProperty(satelliteId, 'visibility', satellite ? 'visible' : 'none');
     }
     status.hidden = satellite || Boolean(basemap);
-    if (!status.hidden) status.textContent = '经典底图未能加载。仍可查看省区和地方记录。';
+    if (!status.hidden) status.textContent = t('经典底图未能加载。仍可查看省区和地方记录。',
+      'The classic basemap could not load. Provincial outlines and records are still available.');
   }
 
   function updateLegend() {
@@ -299,7 +323,7 @@ export async function mountNationalMap(section, chapter) {
     regionState(selectedRegion, 'selected', false);
     selectedRegion = region;
     regionState(selectedRegion, 'selected', true);
-    search.setSelection(mention?.name ?? site?.name ?? region?.name ?? '');
+    search.setSelection(mention || site ? siteName(mention ?? site) : region ? regionName(region) : '');
     map.setFilter(atlasLayer.selected, ['==', ['get', 'siteId'], site?.id ?? '']);
     if (!chapter) {
       const url = mapHref({ region: region?.id, site: site?.id, record, mention: mention?.id });
@@ -309,13 +333,13 @@ export async function mountNationalMap(section, chapter) {
   }
 
   function showDetails(label, name, nodes) {
-    kind.textContent = label;
-    title.textContent = name;
+    kind.textContent = t(label);
+    title.textContent = t(name);
     details.replaceChildren(...nodes);
     panel.scrollTop = 0;
     if (chapter && panel.hidden) map.cooperativeGestures.disable();
     panel.hidden = false;
-    announcement.textContent = label + ' · ' + name;
+    announcement.textContent = t(label + ' · ' + name);
   }
 
   function clearDetails() {
@@ -330,9 +354,10 @@ export async function mountNationalMap(section, chapter) {
   function showRegion(region) {
     setSelection({ region });
     if (chapter) {
-      showDetails('地理背景', region.name, [
-        element('p', '本页地图标出本章相关地点。各省的死亡估计和其他地方的记录，请看全国地图。', 'atlas-detail-context'),
-        link('在全国地图查看 ↗', mapHref({ region: region.id })),
+      showDetails(t('地理背景', 'Geographic context'), regionName(region), [
+        element('p', t('本页地图标出本章相关地点。各省的死亡估计和其他地方的记录，请看全国地图。',
+          'This map shows places related to the chapter. Open the full map for provincial death estimates and records from other chapters.'), 'atlas-detail-context'),
+        link(t('在全国地图查看 ↗', 'See this region on the full map ↗'), mapHref({ region: region.id })),
       ]);
       return;
     }
@@ -340,33 +365,43 @@ export async function mountNationalMap(section, chapter) {
     const nodes = [];
     if (regionHasEstimate(region)) {
       const stats = element('dl', '', 'atlas-stats');
-      for (const [label, value] of [['估计非正常死亡人数', deathText(region)], ['非正常死亡比例', rateText(region)]]) {
+      for (const [label, value] of [
+        [t('估计非正常死亡人数', 'Estimated excess deaths'), deathText(region)],
+        [t('非正常死亡比例', 'Share of population'), rateText(region)],
+      ]) {
         const stat = document.createElement('div');
         stat.append(element('dt', label), element('dd', value));
         stats.append(stat);
       }
-      nodes.push(stats, element('p', '曹树基估算了比平常水平多出的死亡。各地报告中的数字可能涉及不同的年份和范围。', 'atlas-detail-context'));
-      if (region.scope) nodes.push(element('p', region.scope, 'atlas-detail-context'));
-      if (reading?.estimateNote) nodes.push(element('p', reading.estimateNote, 'atlas-detail-context'));
+      nodes.push(stats, element('p', t('曹树基估算了比平常水平多出的死亡。各地报告中的数字可能涉及不同的年份和范围。',
+        'Cao Shuji estimated deaths above the expected level. Local reports may cover different years and places.'), 'atlas-detail-context'));
+      if (region.scope) nodes.push(element('p', regionScope(region), 'atlas-detail-context'));
+      if (!english && reading?.estimateNote) nodes.push(element('p', reading.estimateNote, 'atlas-detail-context'));
     } else {
-      nodes.push(element('p', '《墓碑》表 14-1 没有单独列出这个地区的估计。', 'atlas-detail-context'));
+      nodes.push(element('p', t('《墓碑》表 14-1 没有单独列出这个地区的估计。',
+        'Table 14-1 of Tombstone gives no separate estimate for this area.'), 'atlas-detail-context'));
     }
-    if (reading) {
+    const translatedGuide = guides[englishGuides[reading?.slug]];
+    if (english && translatedGuide) {
+      nodes.push(element('h4', translatedGuide.title), element('p', translatedGuide.summary, 'atlas-detail-context'));
+    } else if (!english && reading) {
       nodes.push(element('h4', reading.title), element('p', reading.summary, 'atlas-detail-context'));
       const evidence = reading.evidence[0];
       if (evidence) nodes.push(element('p', evidence.text, 'atlas-detail-context'));
     }
     const actions = element('div', '', 'atlas-detail-actions');
-    const focus = element('button', '放大到该地区', 'focus-button');
+    const focus = element('button', t('放大到该地区', 'Zoom to this region'), 'focus-button');
     focus.type = 'button';
     focus.addEventListener('click', () => map.fitBounds(regionBounds(region), { padding: 35, maxZoom: 9, duration: duration() }));
     actions.append(focus);
-    if (reading) actions.append(link('地区导读 ↗', readingHref(reading.slug)));
-    if (reading && sitesByRegion.has(region.id)) actions.append(link('地方记录 ↗', recordsHref('records-' + reading.slug)));
-    if (reading?.estimateAnchor) actions.append(link('看书里的其他估算 ↗', readingHref(reading.estimateAnchor)));
-    if (regionHasEstimate(region)) actions.append(createPdfLink(279, '查看原著表 14-1 · 第 279 页'));
+    if (reading) actions.append(link(t('地区导读 ↗', translatedGuide ? 'Regional guide ↗' : 'Regional guide in Chinese ↗'), guideHref(reading)));
+    if (reading && sitesByRegion.has(region.id)) actions.append(link(t('地方记录 ↗', 'Local records in Chinese ↗'), recordsHref('records-' + reading.slug)));
+    if (!english && reading?.estimateAnchor) actions.append(link('看书里的其他估算 ↗', readingHref(reading.estimateAnchor)));
+    if (regionHasEstimate(region)) actions.append(createPdfLink(279,
+      t('查看原著表 14-1 · 第 279 页', 'Table 14-1 in Chinese · p. 279')));
     nodes.push(actions);
-    showDetails(regionHasEstimate(region) ? '死亡估计 · 曹树基' : '地区记录', region.name, nodes);
+    showDetails(regionHasEstimate(region) ? t('死亡估计 · 曹树基', 'Death estimates · Cao Shuji') : t('地区记录', 'Regional records'),
+      regionName(region), nodes);
   }
 
   function showSite(site, preferredSlug) {
@@ -375,8 +410,8 @@ export async function mountNationalMap(section, chapter) {
     if (preferredSlug) records.sort((a, b) => Number(b.slug === preferredSlug) - Number(a.slug === preferredSlug));
     const relatedRegions = [...new Set(records.map(record => record.region))];
     const nodes = [element('p', site.level === '范围'
-      ? '这项数字合计了多个地方。圆点只标出大致范围。'
-      : '圆点用今天的地名标出大致位置（' + site.level + '）。', 'atlas-detail-context')];
+      ? t('这项数字合计了多个地方。圆点只标出大致范围。', 'The figure covers several places. The marker shows the approximate area.')
+      : t('圆点用今天的地名标出大致位置（' + site.level + '）。', 'The marker uses a present-day place name to show the approximate location.'), 'atlas-detail-context')];
     for (const record of records) {
       nodes.push(createLocalityRecordEntry(
         record, readingByRegion.get(record.region)?.chapter, site.id, record.slug === preferredSlug,
@@ -386,10 +421,11 @@ export async function mountNationalMap(section, chapter) {
     const related = element('div', '', 'atlas-detail-actions');
     for (const id of relatedRegions) {
       const reading = readingByRegion.get(id);
-      if (reading) related.append(link(regionOptions.get(id).name + '地区导读 ↗', readingHref(reading.slug)));
+      if (reading) related.append(link(t(regionOptions.get(id).name + '地区导读 ↗',
+        englishGuides[reading.slug] ? 'Regional guide ↗' : 'Regional guide in Chinese ↗'), guideHref(reading)));
     }
     nodes.push(related);
-    showDetails('《墓碑》 · 地方记录', site.name, nodes);
+    showDetails(localRecordsTitle, siteName(site), nodes);
   }
 
   function openSite(site, preferredSlug, animationDuration = duration()) {
@@ -401,22 +437,26 @@ export async function mountNationalMap(section, chapter) {
   function showMention(mention) {
     setSelection({ mention });
     const chapterTitle = chapterLabel(bookChapters.find(entry => entry.id === mention.chapterId));
-    const citation = createPdfLink(mention.page, '查看原文 · 第 ' + mention.page + ' 页', mention.text);
-    const locationSource = link('地图坐标来源 ↗', 'https://www.geonames.org/' + mention.geonamesId + '/');
+    const citation = createPdfLink(mention.page, undefined, mention.text);
+    const locationSource = link(t('地图坐标来源 ↗', 'Map coordinate source ↗'), 'https://www.geonames.org/' + mention.geonamesId + '/');
     locationSource.target = '_blank';
     locationSource.rel = 'noreferrer';
     const location = element('section', '', 'atlas-mention-section');
     location.append(
-      element('h4', '地图位置'),
-      element('p', '地图用今天的' + mention.area + ' · ' + mention.modern + '标出大致位置。', 'atlas-detail-context'),
+      element('h4', t('地图位置', 'Map location')),
+      element('p', t('地图用今天的' + mention.area + ' · ' + mention.modern + '标出大致位置。',
+        'Approximate location near present-day ' + mention.area + ' · ' + mention.modern + '.'), 'atlas-detail-context'),
       locationSource,
     );
     const source = element('section', '', 'atlas-mention-section');
     const actions = element('div', '', 'atlas-detail-actions');
-    actions.append(citation, link('本章导读 ↗', chapterHref(mention.chapterId)));
-    source.append(element('h4', '原书出处'), element('p', chapterTitle, 'atlas-detail-context'), actions);
-    showDetails('《墓碑》 · 书中地名', mention.name, [
-      element('p', mention.context, 'atlas-detail-context'),
+    const guide = guides[mention.chapterId];
+    actions.append(citation, link(t('本章导读 ↗', guide ? 'Chapter guide ↗' : 'Chapter guide in Chinese ↗'), chapterHref(mention.chapterId)));
+    const chapterRef = element('p', chapterTitle, 'atlas-detail-context');
+    if (english) chapterRef.lang = 'zh-Hans';
+    source.append(element('h4', t('原书出处', 'Source in the book')), chapterRef, actions);
+    showDetails(t('《墓碑》 · 书中地名', 'Tombstone · Place in the book'), siteName(mention), [
+      element('p', t(mention.context, 'Yang Jisheng mentions this place in the passage linked below.'), 'atlas-detail-context'),
       source,
       location,
     ]);
@@ -435,7 +475,7 @@ export async function mountNationalMap(section, chapter) {
     const version = selectionVersion;
     const source = map.getSource('historical');
     const { cluster_id: id, point_count: count } = feature.properties;
-    showDetails('《墓碑》 · 地方记录', '附近 ' + count + ' 个地点', [element('p', '正在查找附近的记录…', 'atlas-detail-context')]);
+    showDetails(localRecordsTitle, nearbyPlaces(count), [element('p', t('正在查找附近的记录…', 'Finding nearby records…'), 'atlas-detail-context')]);
     const [leaves, zoom] = await Promise.all([
       source.getClusterLeaves(id, count, 0),
       source.getClusterExpansionZoom(id),
@@ -445,14 +485,15 @@ export async function mountNationalMap(section, chapter) {
     const list = element('ul', '', 'atlas-nearby');
     for (const site of sites) {
       const item = document.createElement('li');
-      const button = element('button', site.name + ' · ' + site.records.length + ' 条记录');
+      const button = element('button', siteName(site) + t(' · ' + site.records.length + ' 条记录',
+        ' · ' + site.records.length + (site.records.length === 1 ? ' record' : ' records')));
       button.type = 'button';
       button.addEventListener('click', () => openSite(site));
       item.append(button);
       list.append(item);
     }
-    showDetails('《墓碑》 · 地方记录', '附近 ' + count + ' 个地点', [
-      element('p', '点一个地名，查看当地的记录和原书页码。', 'atlas-detail-context'),
+    showDetails(localRecordsTitle, nearbyPlaces(count), [
+      element('p', t('点一个地名，查看当地的记录和原书页码。', 'Select a place to see local records and source pages.'), 'atlas-detail-context'),
       list,
     ]);
     map.easeTo({ center: feature.geometry.coordinates, zoom, duration: duration() });
@@ -481,11 +522,11 @@ export async function mountNationalMap(section, chapter) {
     }
     if (basemap && zoom >= 7) {
       const place = map.queryRenderedFeatures(point, { layers: modernLayers })
-        .find(({ properties }) => properties['name:zh-Hans'] || properties.name);
+        .find(({ properties }) => properties['name:' + locale] || properties['name:zh-Hans'] || properties.name);
       if (place) return {
         type: 'modern',
-        name: place.properties['name:zh-Hans'] || place.properties.name,
-        kind: placeKinds[place.properties.kind_detail] || '地名',
+        name: place.properties['name:' + locale] || place.properties['name:zh-Hans'] || place.properties.name,
+        kind: placeKinds[place.properties.kind_detail] || t('地名', 'Place'),
       };
     }
     if (zoom < 8 && (mode === 'estimates' || zoom < fadeEnd)) {
@@ -497,26 +538,28 @@ export async function mountNationalMap(section, chapter) {
 
   function tooltipContent(target) {
     if (target.type === 'mention') {
-      const { id, name, page, summary } = target.mention;
-      return ['mention:' + id, name, summary, '《墓碑》第 ' + page + ' 页 · 点开详情'];
+      const { id, page, summary } = target.mention;
+      return ['mention:' + id, siteName(target.mention), t(summary, 'Mentioned in Tombstone'),
+        t('《墓碑》第 ' + page + ' 页 · 点开详情', 'Page ' + page + ' · Select for details')];
     }
     if (target.type === 'region') {
       const { region } = target;
-      return ['region:' + region.id, region.name, !chapter && regionHasEstimate(region)
-        ? '估计非正常死亡 ' + deathText(region) + ' · ' + rateText(region) : '点开查看地区记录'];
+      return ['region:' + region.id, regionName(region), !chapter && regionHasEstimate(region)
+        ? t('估计非正常死亡 ', 'Estimated excess deaths: ') + deathText(region) + ' · ' + rateText(region)
+        : t('点开查看地区记录', 'Select to see regional records')];
     }
     if (target.type === 'site') {
       const { site } = target;
       const first = recordBySlug.get(site.records[0]);
-      const line = first.measure + ' · ' + first.value
-        + (site.records.length > 1 ? ' · 共 ' + site.records.length + ' 条记录' : '');
-      return ['site:' + site.id, site.name, line];
+      const line = recordMeasure(first) + ' · ' + recordValue(first)
+        + (site.records.length > 1 ? t(' · 共 ' + site.records.length + ' 条记录', ' · ' + site.records.length + ' records') : '');
+      return ['site:' + site.id, siteName(site), line];
     }
     if (target.type === 'cluster') {
       const { cluster_id: id, point_count: count } = target.feature.properties;
-      return ['cluster:' + id, '附近 ' + count + ' 个地点', '点击查看地点列表'];
+      return ['cluster:' + id, nearbyPlaces(count), t('点击查看地点列表', 'Select to see the list')];
     }
-    return ['modern:' + target.name, target.name, '现代底图 · ' + target.kind];
+    return ['modern:' + target.name, target.name, t('现代底图 · ', 'Modern basemap · ') + target.kind];
   }
 
   function clearHover() {
@@ -537,9 +580,9 @@ export async function mountNationalMap(section, chapter) {
       hoveredKey = key;
       hoveredRegion = target.region ?? null;
       regionState(hoveredRegion, 'hover', true);
-      tooltipName.textContent = name;
-      tooltipLine.textContent = line;
-      tooltipSource.textContent = source ?? '';
+      tooltipName.textContent = t(name);
+      tooltipLine.textContent = t(line);
+      tooltipSource.textContent = t(source ?? '');
       tooltipSource.hidden = !source;
       tooltip.hidden = false;
       map.getCanvas().style.cursor = 'pointer';
@@ -572,12 +615,12 @@ export async function mountNationalMap(section, chapter) {
         setBasemap('classic');
         const feedback = settings.open ? basemapStatus : status;
         feedback.hidden = false;
-        feedback.textContent = '卫星影像暂时无法加载，已切回经典地图。';
+        feedback.textContent = t('卫星影像暂时无法加载，已切回经典地图。', 'Satellite imagery could not load. The classic basemap is back on.');
         console.warn('Satellite imagery unavailable:', error);
         return;
       }
       status.hidden = false;
-      status.textContent = '地图有些内容没能加载。';
+      status.textContent = t('地图有些内容没能加载。', 'Some map content could not load.');
       console.error('National map error:', error);
     });
     map.once('load', () => {
@@ -599,7 +642,8 @@ export async function mountNationalMap(section, chapter) {
       metric.addEventListener('change', () => {
         const selectedMetric = metric.querySelector('input:checked');
         map.setPaintProperty(atlasLayer.estimate, 'circle-radius', estimateRadius(selectedMetric.value, maximum[selectedMetric.value]));
-        get('atlas-size-label').textContent = '圆的大小表示' + selectedMetric.labels[0].textContent.trim();
+        const metricLabel = selectedMetric.labels[0].textContent.trim();
+        get('atlas-size-label').textContent = t('圆的大小表示', 'Circle size shows ') + (english ? metricLabel.toLowerCase() : metricLabel);
       });
       basemapControls.addEventListener('change', event => setBasemap(event.target.value));
       document.addEventListener('pointerdown', event => {
@@ -643,9 +687,10 @@ export async function mountNationalMap(section, chapter) {
         else if (target.type === 'mention') showMention(target.mention);
         else {
           setSelection();
-          showDetails('现代底图 · ' + target.kind, target.name, [
-            element('p', '这个地名来自 OpenStreetMap。点红色圆点可看《墓碑》里的地方记录。', 'atlas-detail-context'),
-            link('查阅地方记录 ↗', '/records/'),
+          showDetails(t('现代底图 · ', 'Modern basemap · ') + target.kind, target.name, [
+            element('p', t('这个地名来自 OpenStreetMap。点红色圆点可看《墓碑》里的地方记录。',
+              'This is a present-day place from OpenStreetMap. Select a red circle for a record from Tombstone.'), 'atlas-detail-context'),
+            link(t('查阅地方记录 ↗', 'Browse local records in Chinese ↗'), localizedHref('/records/')),
           ]);
         }
       });
@@ -662,7 +707,7 @@ export async function mountNationalMap(section, chapter) {
       }
       resolve({
         focusRecord(slug, siteId) {
-          const site = siteById.get(siteId);
+          const site = siteId ? siteById.get(siteId) : sites.find(candidate => candidate.records.includes(slug));
           if (!site?.records.includes(slug)) return;
           openSite(site, slug);
           title.focus({ preventScroll: true });

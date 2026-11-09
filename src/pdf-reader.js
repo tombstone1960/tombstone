@@ -1,6 +1,7 @@
 import { getDocument, GlobalWorkerOptions, TextLayer } from 'pdfjs-dist/build/pdf.min.mjs';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { mountPdfSearch } from './pdf-search.js';
+import { localText as t } from './localization/locale.js';
 
 GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -71,7 +72,7 @@ export async function readPdf(reader, initialPage, signal, onPageChange, text) {
     pageInput.value = number;
     previous.disabled = number <= 1;
     next.disabled = number >= book.numPages;
-    status.textContent = '第 ' + number + ' 页，共 ' + book.numPages + ' 页';
+    status.textContent = t('第 ' + number + ' 页，共 ' + book.numPages + ' 页');
     onPageChange(number);
   }
 
@@ -119,6 +120,7 @@ export async function readPdf(reader, initialPage, signal, onPageChange, text) {
 
       const text = document.createElement('div');
       text.className = 'pdf-reader-text';
+      text.lang = 'zh-Hans';
       const canvasTask = page.render({
         canvas, viewport, transform: [density, 0, 0, density, 0, 0],
       });
@@ -139,7 +141,7 @@ export async function readPdf(reader, initialPage, signal, onPageChange, text) {
       state.cancel = undefined;
       const message = document.createElement('p');
       message.className = 'pdf-page-error';
-      message.textContent = '此页暂时无法显示。可通过档案馆查阅原文。';
+      message.textContent = t('此页暂时无法显示。可通过档案馆查阅原文。');
       sheet.replaceChildren(message);
       console.error('Could not render reference PDF page:', error);
     }

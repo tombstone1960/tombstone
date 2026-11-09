@@ -11,10 +11,12 @@
   "dependencies": {
     "@protomaps/basemaps": "5.7.2",
     "maplibre-gl": "6.17.0",
+    "opencc-js": "1.4.2",
     "pdfjs-dist": "6.5.438",
     "pmtiles": "4.5.0"
   },
   "devDependencies": {
+    "parse5": "8.0.1",
     "vite": "^8.3.6"
   }
 }

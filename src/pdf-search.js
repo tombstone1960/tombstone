@@ -1,3 +1,5 @@
+import { locale, localText as t } from './localization/locale.js';
+
 // A PDF can split a Chinese phrase across runs or lines. Keep offsets back
 // into the original runs so the highlights still land on the printed text.
 function searchText(text, offsets) {
@@ -139,7 +141,7 @@ export function mountPdfSearch(reader, book, signal, currentPage, goToPage, pass
   function selectMatch(position) {
     selectedIndex = (position + matches.length) % matches.length;
     const match = matches[selectedIndex];
-    status.textContent = '第 ' + (selectedIndex + 1) + ' 项，共 ' + matches.length + ' 项';
+    status.textContent = t('第 ' + (selectedIndex + 1) + ' 项，共 ' + matches.length + ' 项');
     scrollToMatch = true;
     goToPage(match.page);
     redraw();
@@ -157,7 +159,8 @@ export function mountPdfSearch(reader, book, signal, currentPage, goToPage, pass
   }
 
   async function submitSearch() {
-    const term = searchText(input.value);
+    const entered = input.value;
+    const term = searchText(entered);
     if (term === query && matches.length) {
       selectMatch(selectedIndex + 1);
       return;
@@ -166,11 +169,11 @@ export function mountPdfSearch(reader, book, signal, currentPage, goToPage, pass
     if (!term) return;
     query = term;
     searching = true;
-    status.textContent = '正在搜索全书…';
+    status.textContent = t('正在搜索全书…');
     const current = request;
     try {
       index ??= readTextIndex(book, signal, page => {
-        if (searching && !signal.aborted) status.textContent = '正在读取第 ' + page + ' / ' + book.numPages + ' 页…';
+        if (searching && !signal.aborted) status.textContent = t('正在读取第 ' + page + ' / ' + book.numPages + ' 页…');
       }).catch(error => {
         index = undefined;
         throw error;
@@ -179,8 +182,14 @@ export function mountPdfSearch(reader, book, signal, currentPage, goToPage, pass
       if (signal.aborted || current !== request) return;
       searching = false;
       matches = findMatches(pages, term);
+      if (!matches.length && locale === 'zh-Hant') {
+        const { Converter } = await import('opencc-js/t2cn');
+        if (signal.aborted || current !== request) return;
+        const simplified = searchText(Converter({ from: 'tw', to: 'cn' })(entered));
+        if (simplified && simplified !== term) matches = findMatches(pages, simplified);
+      }
       if (!matches.length) {
-        status.textContent = '没有找到匹配的文字';
+        status.textContent = t('没有找到匹配的文字');
         return;
       }
       previous.disabled = next.disabled = matches.length === 1;
@@ -189,7 +198,7 @@ export function mountPdfSearch(reader, book, signal, currentPage, goToPage, pass
     } catch (error) {
       if (signal.aborted || current !== request) return;
       searching = false;
-      status.textContent = '没能搜索原文，请再试一次。';
+      status.textContent = t('没能搜索原文，请再试一次。');
       console.error('Could not search reference PDF:', error);
     }
   }

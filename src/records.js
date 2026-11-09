@@ -6,6 +6,7 @@ import provinces from './data/provinces.json';
 import { fill, scrollToFragment } from './page-content.js';
 import { createPdfLink } from './pdf-preview.js';
 import { mapHref, readingHref } from './routes.js';
+import { localizeTraditional } from './localization/locale.js';
 
 const localIndex = document.querySelector('#local-index');
 const localList = document.querySelector('#local-list');
@@ -56,4 +57,6 @@ for (const reading of [...readings].sort((a, b) =>
   if (records.length) renderLocalRecords(reading, records);
 }
 
+localizeTraditional(localIndex);
+localizeTraditional(localList);
 scrollToFragment();

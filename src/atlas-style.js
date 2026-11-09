@@ -1,4 +1,5 @@
 import { layers, namedFlavor } from '@protomaps/basemaps';
+import { locale } from './localization/locale.js';
 
 export const fadeStart = 5.2;
 export const fadeEnd = 6.3;
@@ -62,7 +63,7 @@ export function basemapLayers(theme) {
     state_label: '#5a6a74', state_label_halo: paper,
     country_label: '#566772', country_label_halo: paper,
   };
-  return layers('protomaps', { ...namedFlavor(theme), ...palette }, { lang: 'zh-Hans' }).filter(layer => !omitted.has(layer.id)).map(layer => {
+  return layers('protomaps', { ...namedFlavor(theme), ...palette }, { lang: locale }).filter(layer => !omitted.has(layer.id)).map(layer => {
     if (layer.type !== 'symbol') return layer;
     const { 'icon-image': image, 'icon-size': size, ...layout } = layer.layout;
     return {

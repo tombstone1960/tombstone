@@ -3,10 +3,11 @@ import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import { referencePdf } from './src/data/citations.js';
 import { bookChapters } from './src/data/book-chapters.js';
+import { alternateLocales, languageSwitch, localizePageHtml, siteOrigin } from './src/localization/site-pages.js';
+import { englishPages, localePath } from './src/localization/routes.js';
 
 const pdfArchive = new URL(referencePdf);
 const appearanceControl = readFileSync(new URL('./src/appearance-control.html', import.meta.url), 'utf8');
-const siteOrigin = 'https://mubei.vercel.app';
 const siteName = '《墓碑》阅读导览';
 
 const routes = [
@@ -23,6 +24,11 @@ const chapterRoutes = bookChapters.map(({ id, summary }) => ({
   summary,
 }));
 const publicPages = [...routes, ...chapterRoutes];
+const bookPage = { path: '/book/', file: resolve(import.meta.dirname, 'book/index.html') };
+const localizedPages = [...publicPages, bookPage].flatMap(page => [
+  { page, locale: 'zh-Hant', path: localePath(page.path, 'zh-Hant') },
+  ...(englishPages.has(page.path) ? [{ page, locale: 'en', path: localePath(page.path, 'en') }] : []),
+]);
 
 function pageMetadata(html, page) {
   if (!page) return [];
@@ -45,6 +51,9 @@ function pageMetadata(html, page) {
 
   const tags = [
     { tag: 'link', attrs: { rel: 'canonical', href: url } },
+    ...alternateLocales(page.path).map(locale => ({
+      tag: 'link', attrs: { rel: 'alternate', hreflang: locale, href: siteOrigin + localePath(page.path, locale) },
+    })),
     ...Object.entries(properties).map(([property, content]) => ({ tag: 'meta', attrs: { property, content } })),
     { tag: 'meta', attrs: { name: 'twitter:card', content: 'summary_large_image' } },
   ];
@@ -71,6 +80,7 @@ function siteShell() {
           ${navigation}
         </nav>
         ${appearanceControl}
+        ${page ? languageSwitch(page.path) : ''}
       </div>
     </header>`;
       const footer = `<footer class="site-footer">
@@ -84,14 +94,18 @@ function siteShell() {
         html = html.replace('<!-- atlas-controls -->', readFileSync(new URL('./src/atlas-controls.html', import.meta.url), 'utf8'));
       }
       return {
-        html: html.replace('<head>', '<head>\n    <script src="/appearance.js"></script>')
+        html: html.replace('<head>', '<head>\n    <script src="/appearance.js"></script>\n    <script src="/language-switch.js" defer></script>')
           .replace('</head>', '  <link rel="icon" href="/stele-rubbing-icon.png" type="image/png">\n  </head>')
           .replace('<!-- site-header -->', header).replace('<!-- site-footer -->', footer),
         tags: pageMetadata(html, page),
       };
     },
     generateBundle() {
-      const urls = publicPages.map(({ path }) => `  <url><loc>${siteOrigin}${path}</loc></url>`).join('\n');
+      const paths = [
+        ...publicPages.map(page => page.path),
+        ...localizedPages.filter(({ page }) => page !== bookPage).map(({ path }) => path),
+      ];
+      const urls = paths.map(path => `  <url><loc>${siteOrigin}${path}</loc></url>`).join('\n');
       this.emitFile({
         type: 'asset',
         fileName: 'sitemap.xml',
@@ -102,13 +116,55 @@ function siteShell() {
         fileName: 'robots.txt',
         source: `User-agent: *\nAllow: /\nSitemap: ${siteOrigin}/sitemap.xml\n`,
       });
+      const converter = import.meta.resolve('opencc-js/cn2t');
+      const notices = ['LICENSE', 'THIRD_PARTY_LICENSES.md'].map(file =>
+        readFileSync(new URL('../../' + file, converter), 'utf8'));
+      this.emitFile({ type: 'asset', fileName: 'opencc-notices.txt', source: notices.join('\n\n') });
+    },
+  };
+}
+
+function localizedSite() {
+  return {
+    name: 'tombstone-localized-pages',
+    configureServer(server) {
+      server.middlewares.use(async (request, response, next) => {
+        const url = new URL(request.url, siteOrigin);
+        const variant = localizedPages.find(({ path }) => path === url.pathname || path === url.pathname + '/');
+        if (!variant || !['GET', 'HEAD'].includes(request.method)) return next();
+        if (variant.path !== url.pathname) {
+          response.writeHead(308, { Location: variant.path + url.search }).end();
+          return;
+        }
+        try {
+          const { page, locale } = variant;
+          const html = await server.transformIndexHtml(page.path + 'index.html', readFileSync(page.file, 'utf8'), request.url);
+          response.setHeader('Content-Type', 'text/html; charset=utf-8');
+          response.end(request.method === 'HEAD' ? undefined : localizePageHtml(html, page, locale));
+        } catch (error) {
+          next(error);
+        }
+      });
+    },
+    generateBundle: {
+      order: 'post',
+      handler(_options, bundle) {
+        // Reuse Vite's final asset URLs so every edition loads the same application.
+        for (const { page, locale, path } of localizedPages) {
+          const source = bundle[page.path.slice(1) + 'index.html'].source;
+          this.emitFile({
+            type: 'asset', fileName: path.slice(1) + 'index.html',
+            source: localizePageHtml(source, page, locale),
+          });
+        }
+      },
     },
   };
 }
 
 export default defineConfig({
   appType: 'mpa',
-  plugins: [siteShell()],
+  plugins: [siteShell(), localizedSite()],
   server: {
     proxy: {
       '^/reference/tombstone\\.pdf$': {
@@ -129,7 +185,7 @@ export default defineConfig({
   },
   build: {
     rolldownOptions: {
-      input: [...publicPages.map(route => route.file), resolve(import.meta.dirname, 'book/index.html')],
+      input: [...publicPages.map(route => route.file), bookPage.file],
     },
   },
 });

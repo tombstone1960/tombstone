@@ -16,6 +16,13 @@ The memorial homepage links to the national map (`/map/`), the chapter index
 (`/read/`), the locality archive (`/records/`), and the sources and methodology
 (`/sources/`).
 
+The language menu links to the corresponding page where available and keeps
+map selections in the URL. Traditional Chinese (`/zh-hant/`) uses Taiwanese
+wording with a reviewed glossary. Direct quotations and the reference PDF
+retain the source wording. English (`/en/`) includes the homepage, map, sources,
+and guides to Henan, Sichuan, and Anhui. The map links to Chinese records and
+chapters where an English guide is unavailable.
+
 The reading index follows the 2007 reference PDF. Each of the 28 chapters
 and the preface, chronology, and bibliography has a page. The chapter pages
 link to individual subsections and show a map filtered to the cited records,

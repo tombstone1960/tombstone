@@ -18,10 +18,14 @@
     document.querySelectorAll('input[name="site-appearance"]').forEach(input => {
       input.checked = input.value === preference;
     });
-    const action = theme === 'dark' ? '切换到浅色' : '切换到深色';
+    const [light, dark, label] = {
+      en: ['Switch to light theme', 'Switch to dark theme', 'Theme'],
+      'zh-Hant': ['切換至淺色', '切換至深色', '外觀'],
+    }[root.lang] ?? ['切换到浅色', '切换到深色', '外观'];
+    const action = theme === 'dark' ? light : dark;
     document.querySelectorAll('.site-appearance-toggle').forEach(button => {
       button.title = action;
-      button.setAttribute('aria-label', '外观 · ' + action);
+      button.setAttribute('aria-label', label + ' · ' + action);
     });
     if (root.dataset.theme === theme) return;
     root.dataset.theme = theme;

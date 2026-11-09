@@ -2,6 +2,7 @@ import { bookChapters, chapterLabel } from './data/book-chapters.js';
 import { chapterPassages, chapterRecords, readingDestination } from './chapter-index.js';
 import { chapterHref } from './routes.js';
 import { scrollToFragment } from './page-content.js';
+import { localizeTraditional } from './localization/locale.js';
 
 const destination = readingDestination(location.hash.slice(1));
 if (destination) location.replace(chapterHref(destination.number) + '#' + destination.fragment);
@@ -35,4 +36,5 @@ for (const part of ['前言', '上篇', '下篇', '附录']) {
   index.append(group);
 }
 
+localizeTraditional(index);
 scrollToFragment();

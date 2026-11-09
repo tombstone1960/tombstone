@@ -1,6 +1,7 @@
 import { referencePageHref } from './data/citations.js';
 import { bookHref } from './routes.js';
 import appearanceControl from './appearance-control.html?raw';
+import { english, localText as t, localizeTraditional } from './localization/locale.js';
 import './pdf-preview.css';
 
 let dialog;
@@ -54,6 +55,7 @@ function fillReader(viewer, { modal }) {
       <div class="pdf-reader-paper"></div>
     </div>
   `;
+  localizeTraditional(viewer);
 }
 
 function createDialog() {
@@ -80,7 +82,7 @@ function startReader(viewer, page, signal, onPageChange, text) {
   viewer.querySelector('.pdf-preview-content').scrollTo(0, 0);
   const status = viewer.querySelector('.pdf-reader-status');
   status.classList.remove('visually-hidden');
-  status.textContent = '正在打开原文…';
+  status.textContent = t('正在打开原文…');
   onPageChange(page);
   import('./pdf-reader.js')
     .then(({ readPdf }) => {
@@ -92,8 +94,8 @@ function startReader(viewer, page, signal, onPageChange, text) {
       archive.href = referencePageHref(page);
       archive.target = '_blank';
       archive.rel = 'noreferrer';
-      archive.textContent = '在档案馆打开原文 ↗';
-      status.replaceChildren('原文没能打开。', archive);
+      archive.textContent = t('在档案馆打开原文 ↗');
+      status.replaceChildren(t('原文没能打开。'), archive);
       console.error('Could not open reference PDF:', error);
     });
 }
@@ -105,7 +107,7 @@ function openPreview(event) {
   const page = Number(event.currentTarget.dataset.pdfPage);
   const text = event.currentTarget.dataset.pdfText;
   dialog ??= createDialog();
-  dialog.querySelector('h2').textContent = '《墓碑》原文 · 第 ' + page + ' 页';
+  dialog.querySelector('h2').textContent = t('《墓碑》原文 · 第 ' + page + ' 页');
   const fullPage = dialog.querySelector('.pdf-preview-actions a');
   session?.abort();
   session = new AbortController();
@@ -130,18 +132,18 @@ export function mountBookReader(viewer) {
     archive.href = referencePageHref(number);
     const url = bookHref(number, number === page ? text : undefined);
     if (location.pathname + location.search !== url) history.replaceState(history.state, '', url);
-    document.title = '《墓碑》原文 · 第 ' + number + ' 页';
+    document.title = t('《墓碑》原文 · 第 ' + number + ' 页');
   }, text);
 }
 
-export function createPdfLink(page, label = '查看原文 · 第 ' + page + ' 页', text) {
+export function createPdfLink(page, label = t('查看原文 · 第 ' + page + ' 页', 'Original in Chinese · p. ' + page), text) {
   const link = document.createElement('a');
   link.className = 'pdf-preview-link';
-  link.href = archiveOnly ? referencePageHref(page) : bookHref(page, text);
+  link.href = archiveOnly || english ? referencePageHref(page) : bookHref(page, text);
   link.target = '_blank';
   link.rel = 'noreferrer';
-  link.textContent = label;
-  if (!archiveOnly && typeof HTMLDialogElement !== 'undefined' && HTMLDialogElement.prototype.showModal) {
+  link.textContent = t(label);
+  if (!archiveOnly && !english && typeof HTMLDialogElement !== 'undefined' && HTMLDialogElement.prototype.showModal) {
     link.dataset.pdfPage = page;
     if (text) link.dataset.pdfText = text;
     link.setAttribute('aria-haspopup', 'dialog');
