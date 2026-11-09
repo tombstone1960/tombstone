@@ -5,8 +5,9 @@ import { referencePdf } from './src/data/citations.js';
 import { bookChapters } from './src/data/book-chapters.js';
 
 const pdfArchive = new URL(referencePdf);
-const chapterFiles = bookChapters.map(({ id }) => resolve(import.meta.dirname, 'read', id, 'index.html'));
 const appearanceControl = readFileSync(new URL('./src/appearance-control.html', import.meta.url), 'utf8');
+const siteOrigin = 'https://mubei.vercel.app';
+const siteName = '《墓碑》阅读导览';
 
 const routes = [
   ['/', '首页'],
@@ -16,11 +17,47 @@ const routes = [
   ['/sources/', '资料与口径'],
 ].map(([path, label]) => ({ path, label, file: resolve(import.meta.dirname, '.' + path + 'index.html') }));
 
+const chapterRoutes = bookChapters.map(({ id, summary }) => ({
+  path: '/read/' + id + '/',
+  file: resolve(import.meta.dirname, 'read', id, 'index.html'),
+  summary,
+}));
+const publicPages = [...routes, ...chapterRoutes];
+
+function pageMetadata(html, page) {
+  if (!page) return [];
+
+  const title = html.match(/<title>([^<]+)<\/title>/)[1];
+  const description = page.summary ?? html.match(/<meta name="description" content="([^"]+)"/)[1];
+  const url = siteOrigin + page.path;
+  const properties = {
+    'og:type': 'website',
+    'og:site_name': siteName,
+    'og:locale': 'zh_CN',
+    'og:title': title,
+    'og:description': description,
+    'og:url': url,
+    'og:image': siteOrigin + '/share-card.jpg',
+    'og:image:width': '1200',
+    'og:image:height': '630',
+    'og:image:alt': '深色底上的《墓碑》碑拓与“中国大饥荒的地方记忆”字样',
+  };
+
+  const tags = [
+    { tag: 'link', attrs: { rel: 'canonical', href: url } },
+    ...Object.entries(properties).map(([property, content]) => ({ tag: 'meta', attrs: { property, content } })),
+    { tag: 'meta', attrs: { name: 'twitter:card', content: 'summary_large_image' } },
+  ];
+  if (page.summary) tags.push({ tag: 'meta', attrs: { name: 'description', content: description } });
+  return tags;
+}
+
 function siteShell() {
   return {
     name: 'tombstone-site-shell',
     transformIndexHtml(html, { filename }) {
-      const active = chapterFiles.includes(filename) ? routes[2] : routes.find(route => route.file === filename);
+      const page = publicPages.find(route => route.file === filename);
+      const active = page?.summary ? routes[2] : page;
       const navigation = routes.slice(1).map(({ path, label }) =>
         '<a href="' + path + '"' + (path === active?.path ? ' aria-current="page"' : '') + '>' + label + '</a>',
       ).join('\n        ');
@@ -46,9 +83,25 @@ function siteShell() {
       if (html.includes('<!-- atlas-controls -->')) {
         html = html.replace('<!-- atlas-controls -->', readFileSync(new URL('./src/atlas-controls.html', import.meta.url), 'utf8'));
       }
-      return html.replace('<head>', '<head>\n    <script src="/appearance.js"></script>')
-        .replace('</head>', '  <link rel="icon" href="/stele-rubbing-icon.png" type="image/png">\n  </head>')
-        .replace('<!-- site-header -->', header).replace('<!-- site-footer -->', footer);
+      return {
+        html: html.replace('<head>', '<head>\n    <script src="/appearance.js"></script>')
+          .replace('</head>', '  <link rel="icon" href="/stele-rubbing-icon.png" type="image/png">\n  </head>')
+          .replace('<!-- site-header -->', header).replace('<!-- site-footer -->', footer),
+        tags: pageMetadata(html, page),
+      };
+    },
+    generateBundle() {
+      const urls = publicPages.map(({ path }) => `  <url><loc>${siteOrigin}${path}</loc></url>`).join('\n');
+      this.emitFile({
+        type: 'asset',
+        fileName: 'sitemap.xml',
+        source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+      });
+      this.emitFile({
+        type: 'asset',
+        fileName: 'robots.txt',
+        source: `User-agent: *\nAllow: /\nSitemap: ${siteOrigin}/sitemap.xml\n`,
+      });
     },
   };
 }
@@ -76,7 +129,7 @@ export default defineConfig({
   },
   build: {
     rolldownOptions: {
-      input: [...routes.map(route => route.file), ...chapterFiles, resolve(import.meta.dirname, 'book/index.html')],
+      input: [...publicPages.map(route => route.file), resolve(import.meta.dirname, 'book/index.html')],
     },
   },
 });
