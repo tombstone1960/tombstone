@@ -324,6 +324,50 @@
   }
 }
 
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  .atlas-page .masthead { min-height: 44px; padding-inline: 12px; }
+  .atlas-page .brand { gap: 6px; font-size: 18px; }
+  .atlas-page .brand-mark { width: 23px; height: 32px; }
+  .atlas-page :is(.brand-word small, .site-appearance-toggle span) { display: none; }
+  .atlas-page .site-nav { gap: 12px; }
+  .atlas-page .masthead-actions { gap: 8px; }
+  .map-section .atlas-toolbar { top: 8px; left: 8px; right: 58px; }
+  .map-section .atlas-search { flex-basis: 260px; }
+  .map-section .atlas-settings-panel { max-height: calc(100dvh - 110px); }
+  .map-section .atlas-search-popover ul { max-height: calc(100dvh - 110px); }
+  .map-section .maplibregl-ctrl-group button, .map-section #atlas-reset { width: 40px; height: 40px; }
+  .map-section #atlas-reset { top: 98px; }
+  .map-section .atlas-legend { top: 146px; }
+  .map-section .atlas-legend-body { max-height: min(40dvh, calc(100dvh - 230px)); }
+  .map-section .atlas-details {
+    display: flex;
+    flex-direction: column;
+    inset: 60px auto 8px 8px;
+    width: min(300px, 42%);
+    max-height: none;
+    padding: 0;
+    overflow: hidden;
+  }
+  .map-section .atlas-detail-heading {
+    flex: none;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--editorial-rule);
+  }
+  .map-section #atlas-detail-title { margin: 2px 38px 0 0; font-size: 18px; }
+  .map-section #atlas-close-details { inset: 2px 2px auto auto; }
+  .map-section #atlas-detail-content {
+    min-height: 0;
+    padding: 2px 12px 8px;
+    overflow: auto;
+    overflow-anchor: none;
+    overscroll-behavior: contain;
+  }
+  .map-section #atlas-detail-content > p { margin-block: 5px; }
+  .map-section .atlas-mention-section { margin-top: 6px; padding-top: 5px; }
+  .map-section #atlas-detail-content .atlas-mention-section h4 { margin-block: 4px 3px; }
+  .map-section .atlas-mention-section .atlas-detail-context { margin-block: 4px; }
+}
+
 :root[data-theme="dark"] .atlas-map-frame :is(.maplibregl-ctrl-group, .maplibregl-ctrl-attrib) {
   background: var(--surface);
   color: var(--ink);

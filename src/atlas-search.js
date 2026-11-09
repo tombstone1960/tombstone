@@ -90,6 +90,5 @@ export function createPlaceSearch(container, items, onSelect) {
       selectedName = name;
       close();
     },
-    focus() { input.focus({ preventScroll: true }); },
   };
 }

@@ -203,7 +203,10 @@ export async function mountNationalMap(section, chapter) {
   const availablePlaces = searchItems.filter(item => item.type === 'region' || siteById.has(item.id) || mentionById.has(item.id));
   const search = createPlaceSearch(get('atlas-search'), availablePlaces, result => {
     if (result.type === 'region') openRegion(result.id);
-    else if (result.type === 'mention') openMention(mentionById.get(result.id)).focus({ preventScroll: true });
+    else if (result.type === 'mention') {
+      openMention(mentionById.get(result.id));
+      title.focus({ preventScroll: true });
+    }
     else openSite(siteById.get(result.id));
   });
   const prefersMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -336,14 +339,14 @@ export async function mountNationalMap(section, chapter) {
     kind.textContent = t(label);
     title.textContent = t(name);
     details.replaceChildren(...nodes);
-    panel.scrollTop = 0;
     if (chapter && panel.hidden) map.cooperativeGestures.disable();
     panel.hidden = false;
+    panel.scrollTop = details.scrollTop = 0;
     announcement.textContent = t(label + ' · ' + name);
   }
 
   function clearDetails() {
-    if (panel.contains(document.activeElement)) search.focus();
+    if (panel.contains(document.activeElement)) map.getCanvas().focus({ preventScroll: true });
     setSelection();
     if (chapter && !panel.hidden) map.cooperativeGestures.enable();
     panel.hidden = true;
@@ -460,14 +463,12 @@ export async function mountNationalMap(section, chapter) {
       source,
       location,
     ]);
-    return citation;
   }
 
   function openMention(mention, animationDuration = duration()) {
     if (mode === 'estimates') setMode('records');
-    const citation = showMention(mention);
+    showMention(mention);
     map.easeTo({ center: mention.location, zoom: Math.max(11, map.getZoom()), duration: animationDuration });
-    return citation;
   }
 
   async function showCluster(feature) {
@@ -663,7 +664,7 @@ export async function mountNationalMap(section, chapter) {
       section.addEventListener('keydown', event => { if (event.key === 'Escape') clearDetails(); });
       panel.addEventListener('wheel', event => {
         // Keep plain scrolling inside long details, and send pinch gestures to the map.
-        const canScroll = panel.scrollHeight > panel.clientHeight;
+        const canScroll = panel.scrollHeight > panel.clientHeight || details.scrollHeight > details.clientHeight;
         if (!event.deltaY || (canScroll && !event.ctrlKey && !event.metaKey)) return;
         event.preventDefault();
         map.getCanvas().dispatchEvent(new WheelEvent('wheel', {
