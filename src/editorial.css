@@ -286,9 +286,25 @@ main { display: block; }
   background: var(--surface);
   box-shadow: 0 4px 14px #222a3224;
 }
-.language-options a { padding: 8px; color: var(--ink); white-space: nowrap; }
-.language-options a[aria-current] { background: var(--tinted-surface); font-weight: 700; }
-.language-options small { color: var(--muted); }
+.language-options a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.language-options a[aria-current="true"] {
+  background: var(--selection-surface);
+  box-shadow: inset 2px 0 var(--selection-border);
+  font-weight: 700;
+}
+.language-options a:hover { background: var(--hover-surface); }
+.language-options a:focus-visible { outline-offset: -2px; }
+.language-options small { margin-inline-start: auto; color: var(--muted); }
 :lang(en) .hero h1 { font-size: clamp(43px, 9vw, 108px); }
 @media (max-width: 600px) {
   :lang(en) .hero-inner { grid-template-columns: minmax(0, 1fr); }
