@@ -17,7 +17,7 @@ const recordCopy = {
   huaidian: ['Huaidian Commune, Guangshan County', 'Deaths recorded in Huaidian Commune', 'Yang reports that the commune had 36,691 people. About one-third died. The figure applies to the commune.'],
   jiangwan: ['Jiangwan Village, Guangshan County', 'Deaths recorded in Jiangwan', 'The book records 45 residents before the famine. Jiangwan was part of Huaidian Commune, whose figures may include the village.'],
   xixian: ['Xi County', 'Deaths in the county committee’s incomplete count', 'The Central and Henan provincial investigation teams cited the figure in October 1960 and noted that it omitted deaths outside the reporting period.'],
-  xinmin: ['Xinmin Commune, Yanyuan County', 'Kitchens that ran out of grain by mid-May 1959', 'The two remaining kitchens also ran out of grain by early June. The figures count kitchens.'],
+  xinmin: ['Xinmin Commune, Yanyuan County', 'Kitchens that ran out of grain by mid-May 1959', 'By early June, the two remaining kitchens had also run out of grain.'],
   lushan: ['Lushan County, Ya’an', 'People still suffering from severe swelling', 'A September 1962 report cited in the book describes people with severe swelling during the harvest.'],
   'lushan-guangming': ['Guangming Production Team, Qingyuan Commune', 'Orphans still living in the production team at the time of the survey', 'The team had 55 people at the time, including three who had moved in. The change in population cannot be used to calculate deaths.'],
   huaidong: ['Huaidong, Banqiao Township, Fengyang County', 'Households without food out of all households surveyed', 'The investigation counted 240 households. In those without food, 892 people were affected.'],

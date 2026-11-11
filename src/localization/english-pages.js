@@ -24,7 +24,7 @@ const home = `<section class="hero" aria-labelledby="home-title">
       <p class="eyebrow"><span class="eyebrow-line"></span> 1958–1962</p>
       <h1 id="home-title">Tombstone</h1>
       <p class="hero-subtitle">Local histories of the Great Chinese Famine</p>
-      <p class="hero-description">Yang Jisheng begins with his father’s death during the famine and asks how the disaster came about. Explore a place on the map, read its history, and follow the references back to the book.</p>
+      <p class="hero-description">Yang Jisheng begins with his father’s death during the famine and asks how the disaster came about. Find places mentioned in the book on the map and follow the page references to the original.</p>
       <div class="hero-actions">
         <a class="primary-link" href="/en/map/">Open the map <span aria-hidden="true">→</span></a>
         <a class="hero-text-link" href="/en/read/">Browse the guides <span aria-hidden="true">↗</span></a>
@@ -37,7 +37,7 @@ const home = `<section class="hero" aria-labelledby="home-title">
   </div>
 </section>
 <section class="page-section home-feature" aria-labelledby="feature-title">
-  <div class="home-section-heading"><h2 id="feature-title">Start with a place</h2><a href="/en/sources/">Sources and map notes ↗</a></div>
+  <div class="home-section-heading"><h2 id="feature-title">Village life during the famine</h2><a href="/en/sources/">Sources and map notes ↗</a></div>
   <div class="home-stories">${Object.entries(guides).map(([id, guide]) =>
     `<article><p class="eyebrow">${guide.place}</p><h3><a href="/en/read/${id}/">${guide.title}</a></h3><p>${guide.summary}</p></article>`).join('')}
   </div>
@@ -51,7 +51,7 @@ const sources = section('Sources', 'An independent reading guide to Yang Jisheng
       <div class="source-links">${original(279, 'Table 14-1 in Chinese')}</div></dd></div>
     <div id="local-source"><dt>Local records</dt><dd>Local records come from Yang’s account and the reports, investigations, and recollections he cites. Some county, commune, and village records count the same people. Adding those figures can double-count them. A people’s commune was a collective administrative and economic unit that included multiple villages or production units.</dd></div>
     <div id="locality-source"><dt>Where markers are placed</dt><dd>Markers show approximate locations using present-day place names. When a precise location is unknown, the marker uses the surrounding village, town, or county. A numbered circle groups nearby places. Coordinates come from <a href="https://www.geonames.org/export/">GeoNames</a> under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</dd></div>
-    <div><dt>Reading the map</dt><dd>For provincial estimates, circle size represents the estimated number of excess deaths by default. You can switch the size to represent the share of the population. Darker circles show a higher share. Hollow circles mark places named in the book. The basemap uses Protomaps and <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, with simplified Natural Earth provincial outlines. Historical reporting areas may cross current boundaries.</dd></div>
+    <div><dt>Reading the map</dt><dd>For provincial estimates, circle size represents the estimated number of excess deaths by default. You can size the circles by excess deaths as a share of the population. Darker circles indicate a higher share. Hollow circles mark places named in the book. The basemap uses Protomaps and <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, with simplified Natural Earth provincial outlines. Historical reporting areas may cross current boundaries.</dd></div>
     <div><dt>Satellite imagery</dt><dd>The satellite basemap uses EOX’s mosaic of Sentinel-2 imagery from 2016 and 2017. <a href="https://cloudless.eox.at/license-non-commercial">Imagery and attribution ↗</a></dd></div>
     <div id="feedback"><dt>Corrections and feedback</dt><dd>Please include the page link, what should change, and the book chapter and page if available. GitHub submissions are public.
       <div class="source-links"><a href="https://github.com/tombstone1960/tombstone/issues/new">Send feedback on GitHub ↗</a></div></dd></div>

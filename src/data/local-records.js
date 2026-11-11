@@ -12,7 +12,7 @@ export const localRecords = [
   },
   {
     region: 'HA', slug: 'jiangwan', level: '村', place: '光山县姜湾村',
-    period: '同段记述，村级起讫日未单列',
+    period: '书中未单列姜湾村的统计时段',
     measure: '书中记载的死亡人数', value: '44 人',
     context: '杨继绳在槐店公社一节中记载，姜湾原有 45 人。姜湾是公社的一部分，这些人可能也算在公社的数字里。',
     pages: '第 22 页',
@@ -49,7 +49,7 @@ export const localRecords = [
     region: 'AH', slug: 'wangge', level: '六村', place: '亳县双沟公社王阁大队',
     period: '1960 年底调查，回顾此前两年',
     measure: '调查所载死亡人数', value: '239 人',
-    context: '梁志远等选查大王支庙等六个灾情较重的村庄，原有 127 户、575 人。这个数字只包括这六个村。',
+    context: '梁志远等人调查了包括大王支庙在内的六个灾情较重的村庄。六村原有 127 户、575 人，这里的死亡人数也只统计这六个村。',
     pages: '第 141 页',
   },
   {
@@ -61,8 +61,8 @@ export const localRecords = [
   },
   ...anhuiCountyRates.map(({ slug, place, rate }) => ({
     region: 'AH', slug, level: '县', place, period: '1960 年',
-    measure: '年度上报死亡率', value: rate + '‰',
-    context: '杨继绳引用王维志整理的各省上报数据。名单列出当年每千人死亡超过 100 人的县。书中提醒，上报数字可能偏低。',
+    measure: '上报死亡率', value: rate + '‰',
+    context: '这个比率表示当年每千人中有多少人死亡。数字来自王维志整理的上报资料，书中提醒这些数字可能偏低。',
     pages: '第 156 页（另见第十三章第 278 页）',
   })),
   {

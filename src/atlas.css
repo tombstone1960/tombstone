@@ -218,6 +218,7 @@
 #atlas-detail-content .locality-entry h4 { margin: 0 0 3px; font-size: 14px; }
 .locality-entry p { margin: 0 0 5px; font-size: 12px; }
 .locality-entry .locality-record-context { color: var(--muted); line-height: 1.65; }
+.locality-entry .citation { display: block; margin: 0 0 3px; }
 .locality-entry a { display: inline-block; font-size: 12px; line-height: 1.65; }
 .locality-entry :is(.pdf-preview-link, .locality-passage-link) { display: block; width: fit-content; }
 .locality-entry .locality-passage-link { font-weight: 700; margin-top: 4px; }

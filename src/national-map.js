@@ -370,14 +370,14 @@ export async function mountNationalMap(section, chapter) {
       const stats = element('dl', '', 'atlas-stats');
       for (const [label, value] of [
         [t('估计非正常死亡人数', 'Estimated excess deaths'), deathText(region)],
-        [t('非正常死亡比例', 'Share of population'), rateText(region)],
+        [t('非正常死亡占人口比例', 'Excess deaths as a share of the population'), rateText(region)],
       ]) {
         const stat = document.createElement('div');
         stat.append(element('dt', label), element('dd', value));
         stats.append(stat);
       }
-      nodes.push(stats, element('p', t('曹树基估算了比平常水平多出的死亡。各地报告中的数字可能涉及不同的年份和范围。',
-        'Cao Shuji estimated deaths above the expected level. Local reports may cover different years and places.'), 'atlas-detail-context'));
+      nodes.push(stats, element('p', t('这些数字来自曹树基的估算，指比平常多出的死亡人数。各地报告的年份和地区范围可能不同。',
+        'Cao Shuji estimated excess deaths, meaning deaths above the expected level. Local reports may cover different years and areas.'), 'atlas-detail-context'));
       if (region.scope) nodes.push(element('p', regionScope(region), 'atlas-detail-context'));
       if (!english && reading?.estimateNote) nodes.push(element('p', reading.estimateNote, 'atlas-detail-context'));
     } else {

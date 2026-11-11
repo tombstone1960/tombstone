@@ -50,12 +50,19 @@ export function createLocalityRecordEntry(record, chapter, site, selected, passa
   const background = document.createElement('p');
   background.className = 'locality-record-context';
   background.textContent = recordBackground(record);
-  const citation = document.createElement('a');
-  citation.href = recordsHref('local-' + record.slug);
-  citation.textContent = t(bookCitation(record.chapter ?? chapter, record.pages), 'Full record in Chinese ↗');
-  citation.setAttribute('aria-label', t('查看' + record.place + '的完整记录：' + citation.textContent,
+  entry.append(heading, context, background);
+  if (!english) {
+    const citation = document.createElement('span');
+    citation.className = 'citation';
+    citation.textContent = t(bookCitation(record.chapter ?? chapter, record.pages));
+    entry.append(citation);
+  }
+  const recordLink = document.createElement('a');
+  recordLink.href = recordsHref('local-' + record.slug);
+  recordLink.textContent = t('查看完整记录 ↗', 'Full record in Chinese ↗');
+  recordLink.setAttribute('aria-label', t('查看完整记录 · ' + record.place,
     'Full record in Chinese for ' + recordName(record)));
-  entry.append(heading, context, background, citation);
+  entry.append(recordLink);
   if (passageId) {
     const passage = document.createElement('a');
     passage.className = 'locality-passage-link';

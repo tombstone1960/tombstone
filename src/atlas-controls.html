@@ -5,7 +5,7 @@
             <input id="atlas-place-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="atlas-search-results" placeholder="搜索地点" autocomplete="off" disabled>
             <div class="atlas-search-popover" hidden>
               <ul id="atlas-search-results" role="listbox" aria-label="地点搜索结果"></ul>
-              <p class="atlas-search-empty" role="status" hidden>没找到这个地方。试试省名，或换个地名搜索。</p>
+              <p class="atlas-search-empty" role="status" hidden>没找到这个地点。试试输入省名，或换个地名。</p>
             </div>
           </div>
           <details id="atlas-settings" class="atlas-settings">
@@ -39,10 +39,10 @@
                 </div>
               </fieldset>
               <fieldset id="atlas-metric" disabled>
-                <legend>各省圆点按什么定大小？</legend>
+                <legend>圆点大小</legend>
                 <div class="atlas-choice-pair">
-                  <label class="atlas-choice"><input type="radio" name="atlas-metric" value="deaths" checked><span>估计死亡人数</span></label>
-                  <label class="atlas-choice"><input type="radio" name="atlas-metric" value="rate"><span>非正常死亡比例</span></label>
+                  <label class="atlas-choice"><input type="radio" name="atlas-metric" value="deaths" checked><span>估计非正常死亡人数</span></label>
+                  <label class="atlas-choice"><input type="radio" name="atlas-metric" value="rate"><span>非正常死亡占人口比例</span></label>
                 </div>
               </fieldset>
             </div>
@@ -73,10 +73,10 @@
           <summary>图例</summary>
           <div class="atlas-legend-body">
             <span id="atlas-estimate-key">
-              <i class="atlas-key-dot"></i> 各省死亡估计 · <span id="atlas-size-label">圆的大小表示估计死亡人数</span>
-              <span class="atlas-rate-key">颜色表示非正常死亡比例 <span id="atlas-rate-scale" class="atlas-rate-scale"></span></span>
+              <i class="atlas-key-dot"></i> 各省死亡估计 · <span id="atlas-size-label">圆的大小表示估计非正常死亡人数</span>
+              <span class="atlas-rate-key">颜色表示非正常死亡占人口比例 <span id="atlas-rate-scale" class="atlas-rate-scale"></span></span>
             </span>
-            <span id="atlas-record-key" hidden><i class="atlas-key-dot atlas-key-record"></i> 地方记录 · 数字表示附近有几个地点</span>
+            <span id="atlas-record-key" hidden><i class="atlas-key-dot atlas-key-record"></i> 地方记录 · 数字表示地点数</span>
             <span id="atlas-mention-key" hidden><i class="atlas-key-dot atlas-key-mention"></i> 书中地名 · 放大后点空心圆查看</span>
             <a href="/sources/#locality-source">地点怎么标在地图上？</a>
           </div>

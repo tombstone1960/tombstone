@@ -18,7 +18,7 @@ const bozhouMentions = [
   {
     id: 'bozhou-shibali', name: '十八里公社', modern: '十八里镇', location: [115.662, 33.866], geonamesId: 1795512,
     text: '十八里公社羊庙大队',
-    summary: '书中记下羊庙大队幼儿园收养的孤儿后来怎样了。',
+    summary: '书中记下羊庙大队幼儿园收养孤儿后的情况。',
     context: '杨继绳记述羊庙大队幼儿园收养孤儿后的遭遇。同页还记有梁志远到十八里公社集南杨庄察看的情况。',
   },
   {
@@ -42,7 +42,7 @@ const bozhouMentions = [
   {
     id: 'bozhou-shijiuli', name: '十九里公社', modern: '十九里镇', location: [115.831, 33.800], geonamesId: 1795248,
     text: '十九里公社明洼生产队',
-    summary: '李琴丹的死因，书中记述和地方志的说法不同。',
+    summary: '《墓碑》和《亳州市志》对李琴丹死因的记载不同。',
     context: '杨继绳写到明洼生产队的李琴丹，并对照了《亳州市志》记载的死因。',
   },
   {
