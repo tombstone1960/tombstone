@@ -299,7 +299,6 @@ main { display: block; }
 }
 .language-options a[aria-current="true"] {
   background: var(--selection-surface);
-  box-shadow: inset 2px 0 var(--selection-border);
   font-weight: 700;
 }
 .language-options a:hover { background: var(--hover-surface); }
